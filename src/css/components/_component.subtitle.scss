@@ -1,0 +1,26 @@
+.subtitle {
+  background: color-mix(in srgb, var(--primary-color) 40%, white);
+  padding: 6px;
+  width: fit-content;
+  corner-shape: squircle;
+  border-radius: 8px;
+  box-shadow: var(--shadow-elevation-medium);
+  align-self: center;
+  font-weight: bold;
+  font-size: 20px;
+  text-box-trim: trim-both;
+  
+  &.link {
+    background: var(--fourth-color);
+    color: white;
+  }
+
+  &--month{
+    background: var(--fourth-color);
+  }
+
+  &--activity{
+    background: var(--secondary-color);
+    color: var(--white-color);
+  }
+}

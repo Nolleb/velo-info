@@ -1,0 +1,37 @@
+$spacing-unit: 20px;
+$border-radius: $spacing-unit;
+$border-radius-big: $spacing-unit * 2;
+$border-radius-small: 6px;
+
+// Base typographical styles and baseline grid.
+$global-font-size: 14px !default;
+$global-line-height: 20px !default;
+
+// Standardise some UI treatments.
+$global-transition: 0.333333333s !default;
+
+$max-width-viewport: 375px !default;
+
+:root {
+  --border-radius: #{$border-radius};
+  --border-radius-big: #{$border-radius-big};
+  --border-radius-small: #{$border-radius-small};
+  --max-width-viewport: #{$max-width-viewport};
+  --spacing-unit: #{$spacing-unit};
+
+  --shadow-color: 44deg 15% 58%;
+  --shadow-elevation-medium:
+    0px 0px 0px hsl(var(--shadow-color) / 0.36),
+    -0.1px 0.1px 0.2px -0.8px hsl(var(--shadow-color) / 0.36),
+    -0.3px 0.3px 0.5px -1.7px hsl(var(--shadow-color) / 0.36),
+    -0.6px 0.7px 1px -2.5px hsl(var(--shadow-color) / 0.36);
+  --shadow-elevation-high:
+    0px 0px 0px hsl(var(--shadow-color) / 0.34),
+    -0.2px 0.2px 0.3px -0.4px hsl(var(--shadow-color) / 0.34),
+    -0.3px 0.4px 0.6px -0.7px hsl(var(--shadow-color) / 0.34),
+    -0.6px 0.6px 1px -1.1px hsl(var(--shadow-color) / 0.34),
+    -0.9px 1px 1.5px -1.4px hsl(var(--shadow-color) / 0.34),
+    -1.4px 1.5px 2.3px -1.8px hsl(var(--shadow-color) / 0.34),
+    -2.1px 2.3px 3.5px -2.1px hsl(var(--shadow-color) / 0.34),
+    -3.2px 3.3px 5.2px -2.5px hsl(var(--shadow-color) / 0.34);
+}

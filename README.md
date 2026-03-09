@@ -1,4 +1,17 @@
-# VeloInfo
+# 🚴 VeloInfo
+
+Application Angular + Firebase pour analyser vos performances cyclistes Strava avec des métriques personnalisées (Intensité, Fatigue, Exploration, Régularité).
+
+## 🚀 Démarrage rapide
+
+Consultez le guide complet dans [SETUP.md](./SETUP.md)
+
+## Architecture
+
+- **Frontend** : Angular 21
+- **Backend** : Firebase Cloud Functions
+- **Base de données** : Firestore
+- **API** : Strava API v3
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
 

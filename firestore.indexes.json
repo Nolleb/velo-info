@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "activities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "start_date", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "activities",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "month", "order": "ASCENDING"},
+        {"fieldPath": "start_date", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "months",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "year", "order": "ASCENDING"},
+        {"fieldPath": "month", "order": "ASCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

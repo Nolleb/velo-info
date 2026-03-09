@@ -1,0 +1,57 @@
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day {
+  padding: 5px;
+  color: var(--black-color);
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-header {
+  background-color: color-mix(in srgb, var(--primary-color) 40%, white);
+  border: 2px solid var(--white-color);
+  border-radius: var(--border-radius);
+  corner-shape: squircle;
+  font-size: 13px;
+}
+
+.outside {
+  opacity: 0.3;
+}
+
+.has-activity {
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  border-radius: 50%;
+  font-size: 13px;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.multi-activity-badge {
+  position: absolute;
+  top: 0;
+  right: -7px;
+  background-color: var(--primary-color);
+  color: var(--black-color);
+  border-radius: 50%;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

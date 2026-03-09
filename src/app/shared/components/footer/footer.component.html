@@ -1,0 +1,38 @@
+@let allYears = footerStore.getAllYears();  
+@let allYearsLoading = footerStore.getAllYearsLoading();
+
+@if(allYearsLoading) {
+  <div class="d-flex justify-content-center mb-20">
+    <span
+      appSvgIcon
+      [height]="'50px'"
+      [width]="'50px'"
+      [iconName]="'barChart'"
+      [color]="'var(--primary-color)'"
+    >
+    </span>
+  </div>
+} @else {
+  <div class="list-years mb-20">
+    @for(year of allYears; track $index) {
+     @if(year !== currentYear) {
+       <div class="year d-flex flex-direction-column gap-20" (click)="onOpenMonthPage(year.toString())">
+         <div class="mb-auto d-flex justify-content-center">
+           <span
+             appSvgIcon
+             [height]="'100%'"
+             [width]="'50px'"
+             [iconName]="'barChart'"
+             [color]="'var(--white-color)'"
+           >
+           </span>
+         </div>
+         <div class="label font-700">{{ year.toString().slice(-2) }}</div>
+       </div>
+     }
+    }
+  </div>
+}
+<footer class="footer font-600 font-size-14 d-flex justify-content-center align-items-center">
+  Copyright {{currentYear}} - @velo info
+</footer>

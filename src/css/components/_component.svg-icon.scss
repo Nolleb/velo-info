@@ -1,0 +1,9 @@
+.svg-icon {
+  &--secondary-color {
+    fill: var(--secondary-color);
+  }
+
+  &--primary-color {
+    fill: var(--primary-color);
+  }
+}

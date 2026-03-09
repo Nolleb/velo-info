@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+//Order matters, do not put code above @use
+//GENERICS
+@use './css/generic' as generic;
+
+//SETTINGS
+@use './css/settings' as settings;
+
+//TOOLS
+@use './css/tools' as tools;
+
+//ELEMENTS
+@use './css/elements' as elements;
+
+//COMPONENTS
+@use './css/components' as components;
+
+//UTILS
+@use './css/utils' as utils;
