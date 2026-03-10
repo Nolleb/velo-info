@@ -1,0 +1,30 @@
+@for (row of rowsToDisplay(); track $index; let isLastRow = $last) {
+  <ul 
+    class="list-result"
+    [class.list-result--last]="row.length < 3"
+    [class.list-result--stats-globales]="isStatsGlobales()"
+  >
+    @for (item of row; track $index; let isLast = $last) {
+      <li 
+        class="list-result__item"
+        [class.list-result__item--stats-globales]="isStatsGlobales()"
+      >
+        <div class="font-600 list-result__result">{{ item.value }}</div>
+        <div class="list-result__label d-flex align-items-center gap-5">
+          <div class="list-result__label font-300">{{ item.label }}</div>
+          <span
+            appSvgIcon
+            [height]="item.icon.height"
+            [width]="item.icon.width"
+            [iconName]="item.icon.name"
+            [class]="'d-flex'"
+            [color]="item.icon.color"
+          ></span>
+        </div>
+      </li>            
+      @if (!isLast && !isStatsGlobales()) {
+        <li><div class="separator"></div></li>
+      }           
+    }
+  </ul>
+}

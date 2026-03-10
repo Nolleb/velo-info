@@ -1,0 +1,10 @@
+.layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  margin: 0 auto;
+
+  max-width: var(--max-width-viewport);
+  padding-inline: 5px;
+  padding-top: 5px;
+}

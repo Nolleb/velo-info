@@ -1,0 +1,7 @@
+$SCREEN_QUERY: 'screen and (min-width: 1024px)';
+
+@mixin mq($query: $SCREEN_QUERY) {
+  @media #{$query} {
+    @content;
+  }
+}

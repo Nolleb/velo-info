@@ -1,0 +1,170 @@
+[debug] [2026-03-03T23:59:46.637Z] ----------------------------------------------------------------------
+[debug] [2026-03-03T23:59:46.646Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2026-03-03T23:59:46.647Z] CLI Version:   15.8.0
+[debug] [2026-03-03T23:59:46.648Z] Platform:      win32
+[debug] [2026-03-03T23:59:46.648Z] Node Version:  v20.19.0
+[debug] [2026-03-03T23:59:46.649Z] Time:          Wed Mar 04 2026 00:59:46 GMT+0100 (heure normale d’Europe centrale)
+[debug] [2026-03-03T23:59:46.650Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-03T23:59:52.932Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-03T23:59:52.933Z] > authorizing via signed-in user (rbellongronnier@gmail.com)
+[debug] [2026-03-03T23:59:53.369Z] openjdk version "21.0.10" 2026-01-20 LTS
+
+[debug] [2026-03-03T23:59:53.370Z] OpenJDK Runtime Environment Microsoft-13106404 (build 21.0.10+7-LTS)
+OpenJDK 64-Bit Server VM Microsoft-13106404 (build 21.0.10+7-LTS, mixed mode, sharing)
+
+[debug] [2026-03-03T23:59:53.395Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: functions, firestore, hosting, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions, firestore, hosting, extensions"}}
+[debug] [2026-03-03T23:59:53.403Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:53.404Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:53.407Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/velo-info [none]
+[debug] [2026-03-03T23:59:54.560Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/velo-info 200
+[debug] [2026-03-03T23:59:54.560Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/velo-info {"projectNumber":"522363838952","projectId":"velo-info","lifecycleState":"ACTIVE","name":"velo-info","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-03-03T12:42:19.764415Z"}
+[debug] [2026-03-03T23:59:54.589Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-03-03T23:59:54.589Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  hub: emulator hub unable to start on port 4400, starting on 4401 instead. {"metadata":{"emulator":{"name":"hub"},"message":"emulator hub unable to start on port 4400, starting on 4401 instead."}}
+[warn] !  logging: Logging Emulator unable to start on port 4500, starting on 4501 instead. {"metadata":{"emulator":{"name":"logging"},"message":"Logging Emulator unable to start on port 4500, starting on 4501 instead."}}
+[debug] [2026-03-03T23:59:54.597Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  hosting: Hosting Emulator unable to start on port 5000, starting on 5002 instead. {"metadata":{"emulator":{"name":"hosting"},"message":"Hosting Emulator unable to start on port 5000, starting on 5002 instead."}}
+[debug] [2026-03-03T23:59:54.598Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-03-03T23:59:54.599Z] assigned listening specs for emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4040},{"address":"::1","family":"IPv6","port":4040}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8088}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4401},{"address":"::1","family":"IPv6","port":4401}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4501}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-03-03T23:59:54.610Z] Found emulator hub locator: {"version":"15.8.0","origins":["http://127.0.0.1:4400","http://[::1]:4400"],"pid":22652}
+[warn] !  emulators: It seems that you are running multiple instances of the emulator suite for project velo-info. This may result in unexpected behavior. 
+[debug] [2026-03-03T23:59:54.626Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2026-03-03T23:59:54.636Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  eventarc: Eventarc Emulator unable to start on port 9299, starting on 9300 instead. {"metadata":{"emulator":{"name":"eventarc"},"message":"Eventarc Emulator unable to start on port 9299, starting on 9300 instead."}}
+[debug] [2026-03-03T23:59:54.645Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  tasks: Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead. {"metadata":{"emulator":{"name":"tasks"},"message":"Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead."}}
+[debug] [2026-03-03T23:59:54.646Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-03-03T23:59:54.646Z] late-assigned ports for functions and eventarc emulators {"user":{"ui":[{"address":"127.0.0.1","family":"IPv4","port":4040},{"address":"::1","family":"IPv6","port":4040}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8088}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4401},{"address":"::1","family":"IPv6","port":4401}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4501}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5011}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9300}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9500}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, database, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, auth, database, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2026-03-03T23:59:54.707Z] defaultcredentials: writing to file C:\Users\RogerBellon-Gronnier\AppData\Roaming\firebase\rbellongronnier_gmail_com_application_default_credentials.json
+[debug] [2026-03-03T23:59:54.716Z] Setting GAC to C:\Users\RogerBellon-Gronnier\AppData\Roaming\firebase\rbellongronnier_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\RogerBellon-Gronnier\\AppData\\Roaming\\firebase\\rbellongronnier_gmail_com_application_default_credentials.json"}}
+[debug] [2026-03-03T23:59:54.719Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:54.720Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:54.720Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/adminSdkConfig [none]
+[debug] [2026-03-03T23:59:55.024Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/adminSdkConfig 200
+[debug] [2026-03-03T23:59:55.024Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/adminSdkConfig {"projectId":"velo-info","storageBucket":"velo-info.firebasestorage.app"}
+[warn] !  firestore: Cloud Firestore Emulator does not support multiple databases yet. {"metadata":{"emulator":{"name":"firestore"},"message":"Cloud Firestore Emulator does not support multiple databases yet."}}
+[warn] !  firestore: Did not find a Cloud Firestore rules file specified in a firebase.json config file. {"metadata":{"emulator":{"name":"firestore"},"message":"Did not find a Cloud Firestore rules file specified in a firebase.json config file."}}
+[warn] !  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration. {"metadata":{"emulator":{"name":"firestore"},"message":"The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration."}}
+[debug] [2026-03-03T23:59:55.090Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-03-03T23:59:55.092Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-03-03T23:59:55.092Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\RogerBellon-Gronnier\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.20.2.jar","--host","127.0.0.1","--port",8088,"--websocket_port",9150,"--project_id","velo-info","--single_project_mode",true,"--functions_emulator","127.0.0.1:5011"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8088} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\RogerBellon-Gronnier\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.20.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",8088,\"--websocket_port\",9150,\"--project_id\",\"velo-info\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5011\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8088}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2026-03-03T23:59:59.660Z] Mar 04, 2026 12:59:59 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Mar 04, 2026 12:59:59 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
+[debug] [2026-03-03T23:59:59.822Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2026-03-03T23:59:59.823Z] 127.0.0.1:8088
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8088
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8088
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8088\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\r\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8088\n\nIf you are running a Firestore in Datastore Mode project, run:\r\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8088\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\r\nDev App Server is now running.\n\r\n"}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-03-03T23:59:59.854Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:59.854Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-03T23:59:59.855Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/velo-info/sites 
+[debug] [2026-03-04T00:00:00.804Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/velo-info/sites 200
+[debug] [2026-03-04T00:00:00.805Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/velo-info/sites {"sites":[{"name":"projects/velo-info/sites/velo-info","defaultUrl":"https://velo-info.web.app","appId":"1:522363838952:web:f6112e3177add46707c45d","type":"DEFAULT_SITE"}]}
+[debug] [2026-03-04T00:00:00.805Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-04T00:00:00.805Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-04T00:00:00.806Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/webApps/1:522363838952:web:f6112e3177add46707c45d/config [none]
+[debug] [2026-03-04T00:00:01.432Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/webApps/1:522363838952:web:f6112e3177add46707c45d/config 200
+[debug] [2026-03-04T00:00:01.432Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/velo-info/webApps/1:522363838952:web:f6112e3177add46707c45d/config {"projectId":"velo-info","appId":"1:522363838952:web:f6112e3177add46707c45d","storageBucket":"velo-info.firebasestorage.app","apiKey":"AIzaSyCzvsyE_bypmKa4S1vza6VwJuAgzqFgkWo","authDomain":"velo-info.firebaseapp.com","messagingSenderId":"522363838952","measurementId":"G-L3QTLL0DE5","projectNumber":"522363838952","version":"2"}
+[debug] [2026-03-04T00:00:01.444Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-04T00:00:01.445Z] Checked if tokens are valid: true, expires at: 1772585668394
+[debug] [2026-03-04T00:00:01.446Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/velo-info [none]
+[debug] [2026-03-04T00:00:01.706Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/velo-info 200
+[debug] [2026-03-04T00:00:01.706Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/velo-info {"projectId":"velo-info","projectNumber":"522363838952","displayName":"velo-info","name":"projects/velo-info","resources":{"hostingSite":"velo-info"},"state":"ACTIVE","etag":"1_b6e219ba-799c-4151-b424-0a5dbdf9b402"}
+[debug] [2026-03-04T00:00:01.709Z] Specified "public" directory "dist/velo-info/browser" does not exist; Deploy to Hosting site "velo-info" may fail or be empty.
+[info] i  hosting[velo-info]: Serving hosting files from: dist/velo-info/browser {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mdist/velo-info/browser\u001b[22m"}}
+[info] +  hosting[velo-info]: Local server: http://127.0.0.1:5002 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5002\u001b[22m\u001b[24m"}}
+[debug] [2026-03-04T00:00:01.781Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "C:\Users\RogerBellon-Gronnier\dev\velo-info\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\RogerBellon-Gronnier\\dev\\velo-info\\functions\" for Cloud Functions..."}}
+[debug] [2026-03-04T00:00:01.822Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-03-04T00:00:05.969Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[debug] [2026-03-04T00:00:05.970Z] Building nodejs source
+[debug] [2026-03-04T00:00:05.971Z] Failed to find version of module node: reached end of search path C:\Users\RogerBellon-Gronnier\dev\velo-info\functions\node_modules
+[info] +  functions: Using node@20 from host. 
+[debug] [2026-03-04T00:00:05.977Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-03-04T00:00:06.003Z] Found firebase-functions binary at 'C:\Users\RogerBellon-Gronnier\dev\velo-info\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8377
+
+[debug] [2026-03-04T00:00:08.677Z] Got response from /__/functions.yaml {"endpoints":{"syncAllActivities":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"syncAllActivities"},"checkSyncStatus":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"checkSyncStatus"},"stravaWebhook":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"httpsTrigger":{},"entryPoint":"stravaWebhook"},"getActivityDetail":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"getActivityDetail"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{},"params":[{"type":"secret","name":"STRAVA_CLIENT_ID"},{"type":"secret","name":"STRAVA_CLIENT_SECRET"},{"type":"secret","name":"STRAVA_REFRESH_TOKEN"}]}
+[debug] [2026-03-04T00:00:12.775Z] defaultcredentials: writing to file C:\Users\RogerBellon-Gronnier\AppData\Roaming\firebase\rbellongronnier_gmail_com_application_default_credentials.json
+[debug] [2026-03-04T00:00:12.777Z] Setting GAC to C:\Users\RogerBellon-Gronnier\AppData\Roaming\firebase\rbellongronnier_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\RogerBellon-Gronnier\\AppData\\Roaming\\firebase\\rbellongronnier_gmail_com_application_default_credentials.json"}}
+[info] +  functions: Loaded functions definitions from source: syncAllActivities, checkSyncStatus, stravaWebhook, getActivityDetail. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: syncAllActivities, checkSyncStatus, stravaWebhook, getActivityDetail."}}
+[info] +  functions[us-central1-syncAllActivities]: http function initialized (http://127.0.0.1:5011/velo-info/us-central1/syncAllActivities). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5011/velo-info/us-central1/syncAllActivities)."}}
+[info] +  functions[us-central1-checkSyncStatus]: http function initialized (http://127.0.0.1:5011/velo-info/us-central1/checkSyncStatus). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5011/velo-info/us-central1/checkSyncStatus)."}}
+[info] +  functions[us-central1-stravaWebhook]: http function initialized (http://127.0.0.1:5011/velo-info/us-central1/stravaWebhook). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5011/velo-info/us-central1/stravaWebhook)."}}
+[info] +  functions[us-central1-getActivityDetail]: http function initialized (http://127.0.0.1:5011/velo-info/us-central1/getActivityDetail). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5011/velo-info/us-central1/getActivityDetail)."}}
+[debug] [2026-03-04T00:00:12.800Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4040/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator   │ Host:Port      │ View in Emulator UI              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Functions  │ 127.0.0.1:5011 │ http://127.0.0.1:4040/functions  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore  │ 127.0.0.1:8088 │ http://127.0.0.1:4040/firestore  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Hosting    │ 127.0.0.1:5002 │ n/a                              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions │ 127.0.0.1:5011 │ http://127.0.0.1:4040/extensions │
+└────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4401
+  Other reserved ports: 4501, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[warn] !  firestore: Fatal error occurred: 
+   Firestore Emulator has exited with code: 4294967295, 
+   stopping all running emulators {"metadata":{"emulator":{"name":"firestore"},"message":"Fatal error occurred: \n   Firestore Emulator has exited with code: 4294967295, \n   stopping all running emulators"}}

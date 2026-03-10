@@ -1,0 +1,19 @@
+.block {
+  background: var(--white-color); 
+  width: 100%;
+  padding: calc(var(--spacing-unit) / 2);
+  border-top-left-radius: calc(var(--spacing-unit) / 2);
+  border-bottom-left-radius: var(--spacing-unit);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-unit);
+  box-shadow: var(--shadow-elevation-high);
+
+  &.block--first {
+    corner-top-right-shape: squircle;
+  }
+
+  &--link {
+    border: 1px solid var(--secondary-color);
+  }
+}

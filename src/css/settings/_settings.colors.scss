@@ -1,0 +1,23 @@
+$primary: #AFE2FF;
+$secondary: #E76D46;
+$tertiary: #F4F0E5;
+$fourth: #C4D489;
+$black: #282828;
+$grey: #636363;
+$grey-semi-light: #828080;
+$grey-light: #E9E9E9;
+$white: #ffffff;
+$danger: #E52E51;
+
+
+:root {
+  --primary-color: #{$primary};
+  --secondary-color: #{$secondary};
+  --tertiary-color: #{$tertiary};
+  --fourth-color: #{$fourth};
+  --grey-light-color: #{$grey-light};
+  --grey-color: #{$grey};
+  --grey-semi-light-color: #{$grey-semi-light};
+  --black-color: #{$black};
+  --white-color: #{$white};
+}

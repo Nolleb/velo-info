@@ -1,0 +1,50 @@
+/*------------------------------------*\
+  #FLEXBOX  
+\*------------------------------------*/
+$justify-content-values:
+  flex-start, flex-end, center, space-between, space-around, space-evenly, start, end, left, right;
+@each $value in $justify-content-values {
+  .justify-content-#{$value} {
+    justify-content: $value;
+  }
+}
+
+$align-items: stretch, flex-start, flex-end, center, baseline, start, end, self-start, self-end;
+@each $value in $align-items {
+  .align-items-#{$value} {
+    align-items: $value;
+  }
+}
+
+$align-self: stretch, flex-start, flex-end, center, baseline, start, end, self-start, self-end;
+@each $value in $align-items {
+  .align-self-#{$value} {
+    align-self: $value;
+  }
+}
+
+$flex-direction: row, row-reverse, column, column-reverse;
+@each $value in $flex-direction {
+  .flex-direction-#{$value} {
+    flex-direction: $value;
+  }
+}
+
+$flex-wrap: nowrap, wrap, wrap-reverse;
+@each $value in $flex-wrap {
+  .flex-wrap-#{$value} {
+    flex-wrap: $value;
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+
+.d-inline-flex {
+  display: inline-flex;
+}
+
+.d-none {
+  display: none;
+}

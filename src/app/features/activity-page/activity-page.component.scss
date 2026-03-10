@@ -1,0 +1,23 @@
+.infos {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap:5px;
+  color: var(--grey-semi-light-color);
+}
+
+.map-container {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.grid-infos {
+  display: grid;
+  grid-template-columns: 150px repeat(2, 1fr);
+  gap: 10px;
+  grid-auto-flow: dense;
+}
+
+.label-small {
+  color: var(--grey-color);
+}

@@ -1,0 +1,33 @@
+/*------------------------------------*\
+  #SPACING
+\*------------------------------------*/
+$sizes: 5, 10, 15, 20, 30, 40, 50, 60;
+
+@each $size in $sizes {
+  .gap-#{$size} {
+    gap: $size + px;
+  }
+  .mb-#{$size} {
+    margin-bottom: $size + px;
+  }
+  .padding-#{$size} {
+    padding: $size + px;
+  }
+}
+
+.m-auto {
+  margin: 0 auto;
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+.mt-auto {
+  margin-top: auto;
+}
+.mr-auto {
+  margin-right: auto;
+}
+.mb-auto {
+  margin-bottom: auto;
+}
