@@ -11,12 +11,13 @@ import { WeekStore } from "../week-page/store/week.store";
 import { InitialFooterSlice } from "../../shared/components/footer/store/footer.slice";
 import { SafeDatePipe } from "../../shared/pipes/safe-date.pipe";
 import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
+import { ActivityMapComponent } from "../../shared/components/activity-map/activity-map.component";
 
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.scss"],
-  imports: [GlobalResultComponent, JsonPipe, SafeDatePipe, CycleLoaderComponent]
+  imports: [GlobalResultComponent, JsonPipe, SafeDatePipe, CycleLoaderComponent, ActivityMapComponent]
 })
 export class HomeComponent {
 

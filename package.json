@@ -18,8 +18,10 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@googlemaps/polyline-codec": "^1.0.28",
     "@ngrx/signals": "^21.0.1",
     "firebase": "^12.10.0",
+    "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -28,6 +30,7 @@
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
     "@angular/fire": "^20.0.1",
+    "@types/leaflet": "^1.9.21",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",

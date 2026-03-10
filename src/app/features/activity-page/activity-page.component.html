@@ -20,8 +20,8 @@
     }
 
     <div class="map-container">
-      <img src="/assets/img/map-strava.png" alt="map" width="100%" height="100%">
-   </div>
+      <app-activity-map [polyline]="activity?.map?.polyline ? activity?.map?.polyline : activity?.map?.summary_polyline"></app-activity-map>
+    </div>
 
    <div class="grid-infos">
     <div class="grid-infos__column">

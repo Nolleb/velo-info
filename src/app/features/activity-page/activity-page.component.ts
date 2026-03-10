@@ -7,12 +7,13 @@ import { minutesToTimeString } from "../../shared/utils/time.utils";
 import { ResultCriterion, ResultCriterionBlock } from "../../models/result-criterion.model";
 import { SpeedPipe } from "../../shared/pipes/convertSpeed";
 import { MinutesToTimePipe } from "../../shared/pipes/minutes-to-time.pipe";
+import { ActivityMapComponent } from "../../shared/components/activity-map/activity-map.component";
 
 @Component({
   selector: "app-activity-page",
   templateUrl: "./activity-page.component.html",
   styleUrls: ["./activity-page.component.scss"],
-  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe]
+  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, ActivityMapComponent]
 })
 
 export class ActivityPageComponent implements OnInit {
