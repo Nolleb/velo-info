@@ -26,27 +26,57 @@
    <div class="grid-infos">
     <div class="grid-infos__column">
       <div class="grid-infos__label">&nbsp;</div>
-      <div class="grid-infos__label">Vitesse</div>
-      <div class="grid-infos__label">Calories</div>
-      <div class="grid-infos__label">Temps écoulé</div>
-      <div class="grid-infos__label">Cadence</div>
-      <div class="grid-infos__label">Watts</div>
+      <div class="grid-infos__label grid-infos__row-1 grid-infos__row font-700">Vitesse</div>
+      <div class="grid-infos__label grid-infos__row-2 grid-infos__row font-700">Calories</div>
+      <div class="grid-infos__label grid-infos__row-3 grid-infos__row font-700">Temps écoulé</div>
+      <div class="grid-infos__label grid-infos__row-4 grid-infos__row font-700">Cadence</div>
+      <div class="grid-infos__label grid-infos__row-5 grid-infos__row font-700">Watts</div>
     </div>
-    <div class="grid-infos__column">
-      <div class="grid-infos__label">Moy.</div>
-      <div class="grid-infos__label">{{ activity?.average_speed! | speed }} <span class="label-small font-size-11 font-300">km/h</span></div>
-      <div class="grid-infos__label">{{ activity?.calories }}</div>
-      <div class="grid-infos__label">{{ activity?.elapsed_time! | minutesToTime }}</div>
-      <div class="grid-infos__label">{{ activity?.average_cadence }}</div>
-      <div class="grid-infos__label">{{ activity?.average_watts }}</div>
+    <div class="grid-infos__column grid-infos__column--result">
+      <div class="grid-infos__label">
+        <div class="grid-infos__label-result font-700 text-align-center w-90">Moy.</div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-1 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.average_speed! | speed }} <span class="label-small font-size-11 font-300">km/h</span>
+        </div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-2 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.calories ? activity?.calories : '-' }}
+        </div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-3 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.elapsed_time! | minutesToTime }}
+        </div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-4 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.average_cadence ? activity?.average_cadence : '-' }}
+        </div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-5 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.average_watts ? activity?.average_watts : '-' }}
+        </div>
+      </div>
     </div>
-     <div class="grid-infos__column">
-      <div class="grid-infos__label">Max.</div>
-      <div class="grid-infos__label">{{ activity?.max_speed! | speed }} <span class="label-small font-size-11 font-300">km/h</span></div>
-      <div class="grid-infos__label"></div>
-      <div class="grid-infos__label"></div>
-      <div class="grid-infos__label"></div>
-      <div class="grid-infos__label">{{ activity?.max_watts }}</div>
+     <div class="grid-infos__column grid-infos__column--result">
+      <div class="grid-infos__label">
+        <div class="grid-infos__label-result font-700 text-align-center w-90">Max.</div>
+      </div>
+      <div class="grid-infos__label grid-infos__row-1 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.max_speed! | speed }} <span class="label-small font-size-11 font-300">km/h</span></div>
+        </div>
+      <div class="grid-infos__label grid-infos__row-2 grid-infos__row">&nbsp;</div>
+      <div class="grid-infos__label grid-infos__row-3 grid-infos__row">&nbsp;</div>
+      <div class="grid-infos__label grid-infos__row-4 grid-infos__row">&nbsp;</div>
+      <div class="grid-infos__label grid-infos__row-5 grid-infos__row">
+        <div class="grid-infos__label-result">
+          {{ activity?.max_watts ? activity?.max_watts : '-' }}</div>
+        </div>
     </div>
    </div>
 </div>

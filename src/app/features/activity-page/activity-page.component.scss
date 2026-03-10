@@ -14,8 +14,60 @@
 .grid-infos {
   display: grid;
   grid-template-columns: 150px repeat(2, 1fr);
-  gap: 10px;
-  grid-auto-flow: dense;
+  border-radius: 4px;
+  overflow: hidden;
+  font-size: 14px;
+
+  &__label-result {
+    position: relative;
+    z-index: 10;
+  }
+
+  &__row-1 {
+    background: color-mix(in srgb, var(--primary-color) 70%, white);
+    padding: 4px;
+  }
+
+  &__row-2 {
+    background: color-mix(in srgb, var(--primary-color) 60%, white);
+    padding: 4px;
+  }
+
+  &__row-3 {
+    background: color-mix(in srgb, var(--primary-color) 50%, white);
+    padding: 4px;
+  }
+
+  &__row-4 {
+    background: color-mix(in srgb, var(--primary-color) 40%, white);
+    padding: 4px;
+  }
+
+  &__row-5 {
+    background: color-mix(in srgb, var(--primary-color) 30%, white);
+    padding: 4px;
+  }
+
+  &__column--result {
+    position: relative;
+  }
+
+  &__row {
+    padding: 10px;
+    font-size: 12px;
+    .grid-infos__column--result & {
+      &::after {
+        content:"";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        background: var(--tertiary-color);
+        opacity:.25;
+        width: 90%;
+      }
+    }
+  }
 }
 
 .label-small {
