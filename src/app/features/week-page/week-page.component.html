@@ -46,16 +46,32 @@
   
   @if (showModal()) {
     <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-content d-flex flex-direction-column gap-20" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2>Activités</h2>
-          <button class="close-btn" (click)="closeModal()">×</button>
+          <h2 class="subtitle">Activités</h2>
+          <button class="close-btn btn--icon-only" (click)="closeModal()">
+            <span
+              appSvgIcon
+              [height]="'10px'"
+              [width]="'10px'"
+              [iconName]="'close'"
+              [color]="'var(--secondary-color)'"
+              class="d-flex padding-10"
+            >
+            </span>
+          </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body d-flex flex-direction-column gap-20">
           @for (activity of modalActivities(); track activity.id) {
-            <div class="activity-item" (click)="onActivitySelect(activity.id)">
-              <div class="activity-name">{{ activity.name }}</div>
-              <div class="activity-date">{{ activity.start_date | date:'short' }}</div>
+            <div class="activity-item d-flex flex-direction-column gap-10" (click)="onActivitySelect(activity.id)">
+              <div class="activity-name d-flex gap-5 align-items-center justify-content-center">
+                <span class="font-700 font-size-14">{{ activity.name }}</span>  <div>&nbsp;·&nbsp;</div> <span class="font-400 font-size-12">{{ activity.start_date | safeDate }}</span>
+              </div>
+              <div class="activity-distance d-flex gap-5 align-items-center justify-content-center">
+                <span class="font-400 font-size-12">{{ activity.distance | km }} km </span> <div>&nbsp;·&nbsp;</div>
+                <span class="font-400 font-size-12">{{ activity.total_elevation_gain }} m </span> <div>&nbsp;·&nbsp;</div>
+                <span class="font-400 font-size-12">{{ activity.moving_time | minutesToTime }}</span>
+              </div>
             </div>
           }
         </div>

@@ -55,3 +55,10 @@
   line-height: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.activity-item {
+  background: var(--secondary-color);
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--white-color);
+}

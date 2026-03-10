@@ -2,16 +2,20 @@ import { JsonPipe, DatePipe } from "@angular/common";
 import { Component, computed, inject, input, OnInit, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { MONTHS, MONTHS_SLUGS } from "../../shared/utils/variables/months";
-import { StoredActivity, WeekActivity } from "../../models/strava.model";
+import { WeekActivity } from "../../models/strava.model";
 import { WeekStore } from "./store/week.store";
 import { getRoutePath } from "../../app.routes";
 import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
+import { SvgIconDirective } from "../../shared/ui/svg/svg-icon.directive";
+import { KmPipe } from "../../shared/pipes/toKilometre";
+import { SafeDatePipe } from "../../shared/pipes/safe-date.pipe";
+import { MinutesToTimePipe } from "../../shared/pipes/minutes-to-time.pipe";
 
 @Component({
   selector: "app-week-page",
   templateUrl: "./week-page.component.html",
   styleUrls: ["./week-page.component.scss"],
-  imports: [JsonPipe, DatePipe, CycleLoaderComponent]
+  imports: [DatePipe, CycleLoaderComponent, SvgIconDirective, KmPipe, SafeDatePipe, MinutesToTimePipe]
 })
 export class WeekPageComponent implements OnInit {
 
@@ -122,7 +126,7 @@ export class WeekPageComponent implements OnInit {
 
   private getStartOfCalendar(year: number, month: number): Date {
     const date = new Date(year, month, 1);
-    const day = date.getDay() || 7; // dimanche => 7
+    const day = date.getDay() || 7;
     date.setDate(date.getDate() - (day - 1));
     return date;
   }
