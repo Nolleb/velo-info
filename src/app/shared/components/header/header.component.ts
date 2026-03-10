@@ -11,11 +11,16 @@ import { Router } from "@angular/router";
   imports: [SvgIconDirective, CommonModule]
 })
 export class HeaderComponent {
+
   router = inject(Router);
   
   getRoutePath = getRoutePath
   
   onGoHomePage() {
     this.router.navigate([this.getRoutePath('home')]);
+  }
+
+  onSyncPage() {
+    this.router.navigate([this.getRoutePath('syncActivities')]);
   }
 }

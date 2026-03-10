@@ -2,6 +2,7 @@ $spacing-unit: 20px;
 $border-radius: $spacing-unit;
 $border-radius-big: $spacing-unit * 2;
 $border-radius-small: 6px;
+$grid-unit: 40px;
 
 // Base typographical styles and baseline grid.
 $global-font-size: 14px !default;
@@ -18,6 +19,7 @@ $max-width-viewport: 375px !default;
   --border-radius-small: #{$border-radius-small};
   --max-width-viewport: #{$max-width-viewport};
   --spacing-unit: #{$spacing-unit};
+  --grid-unit: #{$grid-unit};
 
   --shadow-color: 44deg 15% 58%;
   --shadow-elevation-medium:

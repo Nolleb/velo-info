@@ -1,0 +1,8 @@
+.btn {
+  &--icon-only {
+    fill: var(--primary-color);
+    padding: 5px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--primary-color) 40%, white);
+  }
+}

@@ -1,4 +1,16 @@
 <div class="container grid">
+  <div class="grid__sync">
+    <button class="btn--icon-only" (click)="onSyncPage()">
+      <span
+        appSvgIcon
+        [height]="'20px'"
+        [width]="'20px'"
+        [iconName]="'refresh'"
+        class="d-flex"
+        [color]="'var(--secondary-color)'"
+      ></span>
+    </button>
+  </div>
   <div class="media grid__media">
     <div class="logo" (click)="onGoHomePage()">
       <span
@@ -6,6 +18,7 @@
         [height]="'100%'"
         [width]="'200px'"
         [iconName]="'logo'"
+        class="d-flex"
       ></span>
     </div>
   </div>

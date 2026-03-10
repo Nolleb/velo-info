@@ -15,8 +15,7 @@
 .year {
   background: var(--secondary-color);
   padding-bottom: 0;
-  border-radius: var(--border-radius);
-  corner-shape: squircle;
+  border-radius: calc(var(--border-radius) / 3);
   color: var(--white-color);
  
   display: flex;

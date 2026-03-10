@@ -56,7 +56,6 @@ export class ActivityMapComponent implements AfterViewInit, OnDestroy {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       minZoom: 5,
-      attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
     this.loadMap(polylineValue);
@@ -67,21 +66,18 @@ export class ActivityMapComponent implements AfterViewInit, OnDestroy {
     
     const points = decode(polyline);
 
-    // Créer l'effet glow avec une polyline large et floue
     L.polyline(points, {
       color: 'red',
       weight: 4,
       opacity: 0.3,
     }).addTo(this.map);
 
-    // Ajouter une deuxième couche pour le glow externe
     L.polyline(points, {
       color: 'red',
       weight: 8,
       opacity: 0.15,
     }).addTo(this.map);
 
-    // La route principale par-dessus
     const route = L.polyline(points, {
       color: '#E76D46',
       weight: 2,

@@ -6,15 +6,24 @@
 
 .grid {
   display: grid;
-  grid-template-rows: repeat(6, 50px);
+  grid-template-rows: repeat(5, var(--grid-unit));
+
+  &__sync {
+    width: fit-content;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    margin-right: calc(var(--spacing-unit) / 4);
+  }
 }
 
 .grid__media {
-  grid-row: 3 / 5;
+  grid-row: 2 / 4;
+  align-content: center;
 }
 
 .grid__corner {
-  grid-row: 5 / 6;
+  grid-row: 4 / 5;
   background: var(--white-color);
   position: relative;
 }
@@ -30,4 +39,9 @@
 
 .logo {
   margin-left: var(--spacing-unit);
+  display: flex;
+  background: color-mix(in srgb, var(--primary-color) 40%, white);
+  padding: 6px;
+  width: fit-content;
+  border-radius: 8px;
 }
