@@ -44,5 +44,10 @@
       gap: 20px;
       justify-content: space-between;
     }
+    &--stats-globales:nth-child(even){
+      background-color: var(--tertiary-color);
+      padding: 5px;
+      border-radius: 6px;
+    }
   }
 }
