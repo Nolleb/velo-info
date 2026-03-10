@@ -1,64 +1,65 @@
-@let results = weekStore.monthActivities();
+@let mmonthActivitiesLoading = weekStore.monthActivitiesLoading();
 
-@let yearTest= weekStore.selectedYear();
-@let monthTest = weekStore.selectedMonth();
-
-<div class="content">  
-  <div class="block block--first">
-    <div class="subtitle">
-      <div class="title font-700">
-        {{ months[monthIndex()] }} {{year()}}
-      </div>
-    </div>
-    <div class="calendar">
-      <div class="week">
-        <div class="day day-header font-600">Lun.</div>
-        <div class="day day-header font-600">Mar.</div>
-        <div class="day day-header font-600">Mer.</div>
-        <div class="day day-header font-600">Jeu.</div>
-        <div class="day day-header font-600">Ven.</div>
-        <div class="day day-header font-600">Sam.</div>
-        <div class="day day-header font-600">Dim.</div>
-      </div>
-    
-      @for (week of calendar(); track $index) {
-        <div class="week">
-          @for (day of week; track day) {
-            <div
-              class="day"
-              [class.outside]="day.getMonth() !== monthIndex()"
-              (click)="onDayClick(day)"
-            >
-              <div [class.has-activity]="getActivitiesCount(day) > 0">
-
-                <span class="day-number">{{ day.getDate() }}</span>
-                @if (getActivitiesCount(day) > 1) {
-                  <span class="multi-activity-badge">{{ getActivitiesCount(day)}}</span>
-                }
-              </div>
-            </div>
-          }
+@if(mmonthActivitiesLoading) {
+  <app-cycle-loader></app-cycle-loader>
+} @else {
+  <div class="content">  
+    <div class="block block--first">
+      <div class="subtitle">
+        <div class="title font-700">
+          {{ months[monthIndex()] }} {{year()}}
         </div>
-      }
-    </div>
-  </div>
-</div>
-
-@if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>Activités</h2>
-        <button class="close-btn" (click)="closeModal()">×</button>
       </div>
-      <div class="modal-body">
-        @for (activity of modalActivities(); track activity.id) {
-          <div class="activity-item" (click)="onActivitySelect(activity.id)">
-            <div class="activity-name">{{ activity.name }}</div>
-            <div class="activity-date">{{ activity.start_date | date:'short' }}</div>
+      <div class="calendar">
+        <div class="week">
+          <div class="day day-header font-600">Lun.</div>
+          <div class="day day-header font-600">Mar.</div>
+          <div class="day day-header font-600">Mer.</div>
+          <div class="day day-header font-600">Jeu.</div>
+          <div class="day day-header font-600">Ven.</div>
+          <div class="day day-header font-600">Sam.</div>
+          <div class="day day-header font-600">Dim.</div>
+        </div>
+      
+        @for (week of calendar(); track $index) {
+          <div class="week">
+            @for (day of week; track day) {
+              <div
+                class="day"
+                [class.outside]="day.getMonth() !== monthIndex()"
+                (click)="onDayClick(day)"
+              >
+                <div [class.has-activity]="getActivitiesCount(day) > 0">
+  
+                  <span class="day-number">{{ day.getDate() }}</span>
+                  @if (getActivitiesCount(day) > 1) {
+                    <span class="multi-activity-badge">{{ getActivitiesCount(day)}}</span>
+                  }
+                </div>
+              </div>
+            }
           </div>
         }
       </div>
     </div>
   </div>
+  
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Activités</h2>
+          <button class="close-btn" (click)="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+          @for (activity of modalActivities(); track activity.id) {
+            <div class="activity-item" (click)="onActivitySelect(activity.id)">
+              <div class="activity-name">{{ activity.name }}</div>
+              <div class="activity-date">{{ activity.start_date | date:'short' }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
 }

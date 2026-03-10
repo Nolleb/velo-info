@@ -1,63 +1,76 @@
 @let latestActivity = homeStore.latestActivity();
 @let latestActivityLoading = homeStore.latestActivityLoading();
+@let currentMonthActivitiesLoading = homeStore.currentMonthActivitiesLoading();
+@let currentYearActivitiesLoading = homeStore.currentYearActivitiesLoading();
+@let globalActivitiesLoading = homeStore.globalActivitiesLoading();
 
 <div class="content">
   <div class="block block--first" (click)="onOpenWeekPage(currentMonth, currentYear)">
     <div class="subtitle font-700 subtitle--month">
       {{ months[currentMonth] }} {{ currentYear }}
     </div>
-    <app-global-result
-      [block]="statsMonth()"
-    ></app-global-result>
+    @if(currentMonthActivitiesLoading) {
+      <app-cycle-loader></app-cycle-loader>
+    } @else {
+      <app-global-result
+        [block]="statsMonth()"
+      ></app-global-result>
+    }
   </div>
-  @if(latestActivityLoading) {
-    <app-cycle-loader></app-cycle-loader>
-  }@else {
-    <div class="block block--link" (click)="onOpenActivityPage(latestActivity?.id)">
-      <div class="subtitle font-700 subtitle--activity">
-        Dernière activité
-      </div>
+  
+  <div class="block block--link" (click)="onOpenActivityPage(latestActivity?.id)">
+    <div class="subtitle font-700 subtitle--activity">
+      Dernière activité
+    </div>
+
+    @if(latestActivityLoading) {
+      <app-cycle-loader></app-cycle-loader>
+    } @else {
       <h3>{{ latestActivity?.name }}</h3>
       <div class="infos">
         <div>{{ latestActivity?.start_date | safeDate }}</div>
         <div>&nbsp;·&nbsp;</div>
         <div>{{ latestActivity?.device_name }}</div>
-        <div>&nbsp;·&nbsp;</div>
-        <div>Ile de France</div>
       </div>
   
       @if(lastActivity().length > 0) {         
         <app-global-result
           [criteria]="lastActivity()"
         ></app-global-result>
-      }
-  
+      }  
       <div class="map-container">
         <app-activity-map [polyline]="latestActivity?.polyline"></app-activity-map>
       </div>
-
-    </div>
-  }
+    }
+  </div>
   <div class="block" (click)="onOpenMonthPage()">
     <div class="subtitle font-700 subtitle--month">
       Statistiques  {{ currentYear }}
     </div>
-    @if(statsCurrentYear().length > 0) {         
-      <app-global-result
-        [criteria]="statsCurrentYear()"
-        [isStatsGlobales]="true"
-      ></app-global-result>
+    @if(currentYearActivitiesLoading) {
+      <app-cycle-loader></app-cycle-loader>
+    } @else {
+      @if(statsCurrentYear().length > 0) {         
+        <app-global-result
+          [criteria]="statsCurrentYear()"
+          [isStatsGlobales]="true"
+        ></app-global-result>
+      }
     }
   </div>
   <div class="block">
     <div class="subtitle font-700">
       Statistiques globales
     </div>
-      @if(statsGlobales().length > 0) {         
-        <app-global-result
-          [criteria]="statsGlobales()"
-          [isStatsGlobales]="true"
-        ></app-global-result>
+      @if(globalActivitiesLoading) {
+        <app-cycle-loader></app-cycle-loader>
+      } @else {
+        @if(statsGlobales().length > 0) {         
+          <app-global-result
+            [criteria]="statsGlobales()"
+            [isStatsGlobales]="true"
+          ></app-global-result>
+        }
       }
   </div>
 </div>

@@ -2,6 +2,7 @@
   @for (row of rowsToDisplay(); track $index; let isLastRow = $last) {
     <ul 
       class="list-result"
+      [class.list-result--block]="!!block()"
       [class.list-result--last]="row.length < 3"
       [class.list-result--stats-globales]="isStatsGlobales()"
     >

@@ -4,17 +4,17 @@ import { Router } from "@angular/router";
 import { getRoutePath } from "../../app.routes";
 import { CardInfosComponent } from "../../shared/components/card-infos/card-infos.component";
 import { MonthStore } from "./store/month.store";
-import { JsonPipe } from "@angular/common";
 import { GlobalResultComponent } from "../../shared/components/global-result/global-result.component";
 import { ResultCriterion, ResultCriterionBlock } from "../../models/result-criterion.model";
 import { minutesToTimeString } from "../../shared/utils/time.utils";
 import { WeekStore } from "../week-page/store/week.store";
+import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
 
 @Component({
   selector: "app-month-page",
   templateUrl: "./month-page.component.html",
   styleUrls: ["./month-page.component.scss"],
-  imports: [CardInfosComponent, JsonPipe, GlobalResultComponent]
+  imports: [CardInfosComponent, GlobalResultComponent, CycleLoaderComponent]
 })
 export class MonthPageComponent implements OnInit {
 

@@ -5,12 +5,13 @@ import { MONTHS, MONTHS_SLUGS } from "../../shared/utils/variables/months";
 import { StoredActivity, WeekActivity } from "../../models/strava.model";
 import { WeekStore } from "./store/week.store";
 import { getRoutePath } from "../../app.routes";
+import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
 
 @Component({
   selector: "app-week-page",
   templateUrl: "./week-page.component.html",
   styleUrls: ["./week-page.component.scss"],
-  imports: [JsonPipe, DatePipe]
+  imports: [JsonPipe, DatePipe, CycleLoaderComponent]
 })
 export class WeekPageComponent implements OnInit {
 

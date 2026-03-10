@@ -3,14 +3,7 @@
 
 @if(allYearsLoading) {
   <div class="d-flex justify-content-center mb-20">
-    <span
-      appSvgIcon
-      [height]="'50px'"
-      [width]="'50px'"
-      [iconName]="'barChart'"
-      [color]="'var(--primary-color)'"
-    >
-    </span>
+    <app-cycle-loader></app-cycle-loader>
   </div>
 } @else {
   <div class="list-years mb-20">

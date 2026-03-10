@@ -1,29 +1,37 @@
-@let yearActivities = monthStore.yearActivities();
-@let currentYearTotals = monthStore.currentYearTotals();
+@let yearActivitiesLoading = monthStore.yearActivitiesLoading();
 
 <div class="content">
-
   <div class="block block--first">
     <div class="subtitle font-700 subtitle--month">
       Statistiques  {{ year() }}
     </div>
+
+  @if(yearActivitiesLoading) {
+    <app-cycle-loader></app-cycle-loader>
+  } @else {
     @if(statsCurrentYear().length > 0) {         
       <app-global-result
         [criteria]="statsCurrentYear()"
         [isStatsGlobales]="true"
       ></app-global-result>
     }
+  }
   </div>
-  @for(month of availableMonths(); track month) {
-    <app-card-infos
-      (click)="onOpenWeekPage(year()!, month)"
-      [year]="year()"
-      [month]="month"
-    >
-      <app-global-result
-        [block]="getMonthStats(month)"
-      ></app-global-result>
-    </app-card-infos>
-  } 
+
+  @if(yearActivitiesLoading) {
+    <app-cycle-loader></app-cycle-loader>
+  } @else {
+    @for(month of availableMonths(); track month) {
+      <app-card-infos
+        (click)="onOpenWeekPage(year()!, month)"
+        [year]="year()"
+        [month]="month"
+      >
+        <app-global-result
+          [block]="getMonthStats(month)"
+        ></app-global-result>
+      </app-card-infos>
+    } 
+  }
 </div>
 

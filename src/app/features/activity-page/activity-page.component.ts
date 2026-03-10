@@ -8,12 +8,13 @@ import { ResultCriterion, ResultCriterionBlock } from "../../models/result-crite
 import { SpeedPipe } from "../../shared/pipes/convertSpeed";
 import { MinutesToTimePipe } from "../../shared/pipes/minutes-to-time.pipe";
 import { ActivityMapComponent } from "../../shared/components/activity-map/activity-map.component";
+import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
 
 @Component({
   selector: "app-activity-page",
   templateUrl: "./activity-page.component.html",
   styleUrls: ["./activity-page.component.scss"],
-  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, ActivityMapComponent]
+  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, ActivityMapComponent, CycleLoaderComponent]
 })
 
 export class ActivityPageComponent implements OnInit {

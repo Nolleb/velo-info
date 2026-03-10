@@ -1,7 +1,12 @@
 @let activity = activityStore.activity();
+@let activityLoading = activityStore.activityLoading();
 
 <div class="content">
   <div class="block block--first">
+
+  @if(activityLoading) {
+    <app-cycle-loader></app-cycle-loader>
+  } @else {
     <div class="header">
       <div class="infos mb-5">
         <div>{{ activity?.start_date | safeDate }}</div>
@@ -12,18 +17,15 @@
         {{ activity?.name }}
       </div>
     </div>
-
     @if(mainActivity().rows.length > 0) {    
       <app-global-result
         [block]="mainActivity()"
       ></app-global-result>
     }
-
     <div class="map-container">
       <app-activity-map [polyline]="activity?.map?.polyline ? activity?.map?.polyline : activity?.map?.summary_polyline"></app-activity-map>
     </div>
-
-   <div class="grid-infos">
+    <div class="grid-infos">
     <div class="grid-infos__column">
       <div class="grid-infos__label">&nbsp;</div>
       <div class="grid-infos__label grid-infos__row-1 grid-infos__row font-700">Vitesse</div>
@@ -62,7 +64,7 @@
         </div>
       </div>
     </div>
-     <div class="grid-infos__column grid-infos__column--result">
+      <div class="grid-infos__column grid-infos__column--result">
       <div class="grid-infos__label">
         <div class="grid-infos__label-result font-700 text-align-center w-90">Max.</div>
       </div>
@@ -78,7 +80,7 @@
           {{ activity?.max_watts ? activity?.max_watts : '-' }}</div>
         </div>
     </div>
-   </div>
+    </div>
+  }
+  </div>
 </div>
-
-<!-- <pre>{{ activity | json }} </pre> -->
