@@ -40,7 +40,7 @@ export class MonthPageComponent implements OnInit {
       icon: {
         name: 'distance',
         width: '100%',
-        height: '20px',
+        height: '25px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -49,8 +49,8 @@ export class MonthPageComponent implements OnInit {
       value: this.monthStore.currentYearTotals()?.totalElevation.toFixed(2).toString() + ' m',
       icon: {
         name: 'elevation',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '22px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -59,8 +59,8 @@ export class MonthPageComponent implements OnInit {
       value: minutesToTimeString(this.monthStore.currentYearTotals()?.totalTime || 0),
       icon: {
         name: 'chrono',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -70,7 +70,7 @@ export class MonthPageComponent implements OnInit {
       icon: {
         name: 'cycling',
         width: '100%',
-        height: '20px',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     }
@@ -116,7 +116,7 @@ export class MonthPageComponent implements OnInit {
             icon: {
               name: 'distance',
               width: '100%',
-              height: '20px',
+              height: '25px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -125,8 +125,8 @@ export class MonthPageComponent implements OnInit {
             value: (monthStats?.totalElevation.toFixed(2).toString() + ' m'),
             icon: {
               name: 'elevation',
-              width: '20px',
-              height: '100%',
+              width: '100%',
+              height: '22px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -135,8 +135,8 @@ export class MonthPageComponent implements OnInit {
             value: minutesToTimeString(monthStats?.totalTime || 0),
             icon: {
               name: 'chrono',
-              width: '20px',
-              height: '100%',
+              width: '100%',
+              height: '30px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -148,8 +148,8 @@ export class MonthPageComponent implements OnInit {
             value: monthStats?.activityCount || 0,
             icon: {
               name: 'cycling',
-              width: '24px',
-              height: '20px',
+              width: '100%',
+              height: '30px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -159,7 +159,7 @@ export class MonthPageComponent implements OnInit {
             icon: {
               name: 'energy',
               width: '100%',
-              height: '20px',
+              height: '30px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -168,8 +168,8 @@ export class MonthPageComponent implements OnInit {
             value: '90%',
             icon: {
               name: 'fatigue',
-              width: '20px',
-              height: '20px',
+              width: '100%',
+              height: '25px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -182,7 +182,7 @@ export class MonthPageComponent implements OnInit {
             icon: {
               name: 'regularity',
               width: '100%',
-              height: '20px',
+              height: '30px',
               color: 'var(--grey-semi-light-color)',
             },
           },
@@ -191,8 +191,8 @@ export class MonthPageComponent implements OnInit {
             value: '23%',
             icon: {
               name: 'earth',
-              width: '20px',
-              height: '100%',
+              width: '100%',
+              height: '30px',
               color: 'var(--grey-semi-light-color)',
             },
           },

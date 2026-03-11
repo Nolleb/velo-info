@@ -1,5 +1,9 @@
 @let activity = activityStore.activity();
 @let activityLoading = activityStore.activityLoading();
+@let latlng = activityStore.routes();
+@let starredSegments = activityStore.starredSegments();
+@let altitudes = activityStore.altitudes();
+@let distances = activityStore.distances();
 
 <div class="content">
   <div class="block block--first">
@@ -12,6 +16,8 @@
         <div>{{ activity?.start_date | safeDate }}</div>
         <div>&nbsp;·&nbsp;</div>
         <div>{{ activity?.device_name }}</div>
+        <div>&nbsp;·&nbsp;</div>
+        <div>{{ activity?.list_ride_zone }}</div>
       </div>
       <div class="subtitle font-700">
         {{ activity?.name }}
@@ -23,8 +29,24 @@
       ></app-global-result>
     }
     <div class="map-container">
-      <app-activity-map [polyline]="activity?.map?.polyline ? activity?.map?.polyline : activity?.map?.summary_polyline"></app-activity-map>
+      <app-activity-map-detail 
+        [latlng]="latlng"
+        [altitudes]="altitudes"
+        [distances]="distances"
+        [starredSegments]="starredSegments"
+        (segmentSelected)="onSegmentSelected($event)"
+      ></app-activity-map-detail>
     </div>
+
+    @if(selectedSegmentData()) {
+      <div class="segment-topology">
+        <h3>{{ selectedSegmentData()!.segment.name }}</h3>
+        <div class="chart-container">
+          <canvas #topologyChart></canvas>
+        </div>
+      </div>
+    }
+
     <div class="grid-infos">
     <div class="grid-infos__column">
       <div class="grid-infos__label">&nbsp;</div>

@@ -1,9 +1,21 @@
 .svg-icon {
   &--secondary-color {
-    fill: var(--secondary-color);
+    //fill: var(--secondary-color);
+        //fill: var(--fourth-color);
+            fill: color-mix(in srgb, var(--primary-color) 80%, #000);
   }
 
   &--primary-color {
     fill: var(--primary-color);
   }
+
+  &--color {
+    fill: color-mix(in srgb, var(--primary-color) 20%, #000);
+  }
+}
+
+.svg-icon--mountain {
+  fill: var(--primary-color);
+  width: 20px;
+  height: 20px;
 }

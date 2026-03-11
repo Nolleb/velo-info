@@ -1,8 +1,7 @@
 <div class="d-flex flex-direction-column gap-20">
-  @for (row of rowsToDisplay(); track $index; let isLastRow = $last) {
+  @for (row of rowsToDisplay(); track $index) {
     <ul 
       class="list-result"
-      [class.list-result--block]="!!block()"
       [class.list-result--last]="row.length < 3"
       [class.list-result--stats-globales]="isStatsGlobales()"
     >
@@ -10,10 +9,8 @@
         <li 
           class="list-result__item"
           [class.list-result__item--stats-globales]="isStatsGlobales()"
-        >
-          <div class="font-600 list-result__result">{{ item.value }}</div>
-          <div class="list-result__label d-flex align-items-center gap-5">
-            <div class="list-result__label font-300">{{ item.label }}</div>
+        >        
+          <div class="d-flex gap-10 align-items-center">
             <span
               appSvgIcon
               [height]="item.icon.height"
@@ -22,11 +19,12 @@
               [class]="'d-flex'"
               [color]="item.icon.color"
             ></span>
+            <div class="d-flex-flex-direction-column gap-5">
+              <div class="font-600 list-result__result">{{ item.value }}</div>
+              <div class="list-result__label font-300">{{ item.label }}</div>
+            </div>
           </div>
-        </li>            
-        @if (!isLast && !isStatsGlobales()) {
-          <li><div class="separator"></div></li>
-        }           
+        </li>                      
       }
     </ul>
   }

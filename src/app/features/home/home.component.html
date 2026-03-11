@@ -6,7 +6,7 @@
 
 <div class="content">
   <div class="block block--first" (click)="onOpenWeekPage(currentMonth, currentYear)">
-    <div class="subtitle font-700 subtitle--month">
+    <div class="subtitle font-700 subtitle--active">
       {{ months[currentMonth] }} {{ currentYear }}
     </div>
     @if(currentMonthActivitiesLoading) {
@@ -19,7 +19,7 @@
   </div>
   
   <div class="block block--link" (click)="onOpenActivityPage(latestActivity?.id)">
-    <div class="subtitle font-700 subtitle--activity">
+    <div class="subtitle font-700 subtitle--active">
       Dernière activité
     </div>
 
@@ -27,10 +27,12 @@
       <app-cycle-loader></app-cycle-loader>
     } @else {
       <h3>{{ latestActivity?.name }}</h3>
-      <div class="infos">
+      <div class="infos font-300">
         <div>{{ latestActivity?.start_date | safeDate }}</div>
         <div>&nbsp;·&nbsp;</div>
         <div>{{ latestActivity?.device_name }}</div>
+        <div>&nbsp;·&nbsp;</div>
+        <div>{{ latestActivity?.main_area }}</div>
       </div>
   
       @if(lastActivity().length > 0) {         
@@ -44,7 +46,7 @@
     }
   </div>
   <div class="block" (click)="onOpenMonthPage()">
-    <div class="subtitle font-700 subtitle--month">
+    <div class="subtitle font-700 subtitle--active">
       Statistiques  {{ currentYear }}
     </div>
     @if(currentYearActivitiesLoading) {

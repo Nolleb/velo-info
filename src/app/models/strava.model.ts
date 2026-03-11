@@ -30,34 +30,64 @@ export interface StravaActivity {
   segment_efforts?: SegmentEffort[];
 }
 
+export interface StravaMap {
+  type: 'latlng' | 'distance' | 'altitude';
+  data: number[] | [number, number][];
+} 
+ 
 export interface SegmentEffort {
-  id: number;
-  name: string;
-  elapsed_time: number;
-  moving_time: number;
-  distance: number;
-  start_date: string;
-  start_date_local: string;
-  average_heartrate?: number;
-  max_heartrate?: number;
-  segment: {
-    id: number;
-    name: string;
-    activity_type: string;
-    distance: number;
-    average_grade: number;
-    maximum_grade: number;
-    elevation_high: number;
-    elevation_low: number;
-    climb_category: number;
-    starred?: boolean;
-  };
-  pr_rank?: number;
-  achievements?: Array<{
-    type_id: number;
-    type: string;
-    rank: number;
-  }>;
+  device_watts: boolean
+  athlete: Athlete
+  segment: Segment
+  id: number
+  moving_time: number
+  visibility: string
+  resource_state: number
+  name: string
+  end_index: number
+  start_date_local: string
+  elapsed_time: number
+  pr_rank: any
+  start_index: number
+  hidden: boolean
+  activity: Activity
+  achievements: any[]
+  start_date: string
+  distance: number
+}
+
+export interface Activity {
+  id: number
+  visibility: string
+  resource_state: number
+}
+
+export interface Athlete {
+  resource_state: number
+  id: number
+}
+
+export interface Segment {
+  activity_type: string
+  elevation_profiles: any
+  id: number
+  elevation_high: number
+  maximum_grade: number
+  city?: string
+  resource_state: number
+  private: boolean
+  end_latlng: number[]
+  climb_category: number
+  name: string
+  start_latlng: number[]
+  state?: string
+  hazardous: boolean
+  elevation_low: number
+  average_grade: number
+  starred: boolean
+  country?: string
+  elevation_profile: any
+  distance: number
 }
 
 export interface LastActivity {
@@ -69,6 +99,7 @@ export interface LastActivity {
   device_name: string;
   total_elevation_gain: number;
   polyline: string;
+  main_area: string;
 }
 
 export interface WeekActivity {
@@ -88,10 +119,21 @@ export interface ActivityMetrics {
 }
 
 export interface StoredActivity extends StravaActivity {
+  main_ride_zone: string,
+  list_ride_zone:string[],
   metrics: ActivityMetrics;
   userId: string;
   month: string; // Format: 'YYYY-MM'
   year: number;
+}
+
+// Interface pour les données de map (stockées séparément)
+export interface ActivityMapData {
+  activityId: number;
+  latlng: { lat: number; lng: number }[];
+  altitude: number[];
+  distance: number[];
+  userId: string;
 }
 
 // Helper pour filtrer les segments favoris

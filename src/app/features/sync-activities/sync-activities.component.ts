@@ -19,11 +19,35 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
       
       @if (!isLoading() && !status().isInitialized && !status().isSyncing) {
         <div class="init-section">
-          <p>Aucune donnée trouvée. Voulez-vous lancer la synchronisation complète ?</p>
-          <button (click)="startFullSync()" class="btn-primary">
-            🚀 Synchronisation complète
-          </button>
-          <p class="warning">⚠️ Cette opération peut prendre plusieurs minutes</p>
+          <p>Aucune donnée trouvée. Synchronisez vos activités par année pour éviter d'exploser vos quotas.</p>
+          <div class="year-sync-section">
+            <h3>📅 Synchronisation par année</h3>
+            <p class="info-text">Recommandé : synchronisez une année à la fois pour économiser vos quotas Strava et Firestore</p>
+            <div class="years-grid">
+              @for (year of availableYears; track year) {
+                <button 
+                  (click)="syncYear(year)" 
+                  [disabled]="status().isSyncing"
+                  [class.synced]="isYearSynced(year)"
+                  [class.syncing]="status().currentYear === year"
+                  class="year-btn">
+                  @if (status().currentYear === year) {
+                    <span class="spinner-small"></span>
+                  }
+                  @if (isYearSynced(year)) {
+                    ✓
+                  }
+                  {{ year }}
+                </button>
+              }
+            </div>
+            <button 
+              (click)="syncAllYears()" 
+              [disabled]="status().isSyncing"
+              class="btn-sync-all">
+              🔄 Synchroniser toutes les années
+            </button>
+          </div>
         </div>
       }
 
@@ -32,6 +56,9 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
           <div class="stats">
             <p>✅ {{ status().totalActivities }} activités synchronisées</p>
             <p>📅 Dernière sync : {{ lastSync() }}</p>
+            @if (status().syncedYears.length > 0) {
+              <p>📊 Années synchronisées : {{ status().syncedYears.join(', ') }}</p>
+            }
             @if (isChecking()) {
               <p class="info">🔍 Vérification...</p>
             } @else {
@@ -42,6 +69,30 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
               }
             }
           </div>
+          
+          <div class="year-sync-section">
+            <h3>📅 Re-synchroniser par année</h3>
+            <p class="info-text">Vous pouvez re-synchroniser une année spécifique si nécessaire</p>
+            <div class="years-grid">
+              @for (year of availableYears; track year) {
+                <button 
+                  (click)="syncYear(year)" 
+                  [disabled]="status().isSyncing"
+                  [class.synced]="isYearSynced(year)"
+                  [class.syncing]="status().currentYear === year"
+                  class="year-btn">
+                  @if (status().currentYear === year) {
+                    <span class="spinner-small"></span>
+                  }
+                  @if (isYearSynced(year)) {
+                    ✓
+                  }
+                  {{ year }}
+                </button>
+              }
+            </div>
+          </div>
+
           <div class="button-group">
             <button 
               (click)="syncLast()" 
@@ -56,19 +107,17 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
               🔄 Nouvelles activités
             </button>
           </div>
-          <div class="resync-section">
-            <p class="resync-info">💡 Métriques mises à jour ? Recalculez tout</p>
-            <button (click)="forceResync()" class="btn-warning">
-              ♻️ Re-synchroniser tout
-            </button>
-          </div>
         </div>
       }
 
       @if (status().isSyncing) {
         <div class="syncing">
           <div class="spinner"></div>
-          <p>Synchronisation en cours...</p>
+          @if (status().currentYear) {
+            <p>Synchronisation de l'année {{ status().currentYear }}...</p>
+          } @else {
+            <p>Synchronisation en cours...</p>
+          }
           <p>{{ status().syncedActivities }} activités traitées</p>
           <div class="progress-bar">
             <div class="progress" [style.width.%]="status().progress"></div>
@@ -246,6 +295,94 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
       border-radius: 4px;
       margin-top: 1rem;
     }
+
+    .year-sync-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .year-sync-section h3 {
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    .info-text {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .years-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .year-btn {
+      padding: 1rem;
+      background: white;
+      border: 2px solid #e0e0e0;
+      color: #333;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .year-btn:hover:not(:disabled) {
+      background: #fc4c02;
+      color: white;
+      border-color: #fc4c02;
+      transform: translateY(-2px);
+    }
+
+    .year-btn.synced {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+
+    .year-btn.syncing {
+      background: #2196F3;
+      color: white;
+      border-color: #2196F3;
+    }
+
+    .spinner-small {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 5px;
+    }
+
+    .btn-sync-all {
+      width: 100%;
+      background: #fc4c02;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-sync-all:hover:not(:disabled) {
+      background: #e63900;
+    }
+
+    .btn-sync-all:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   `]
 })
 export class SyncActivitiesComponent {
@@ -255,6 +392,12 @@ export class SyncActivitiesComponent {
   hasNewActivities = signal<boolean>(true); // Démarre à true, sera désactivé si besoin
   isChecking = signal<boolean>(true); // On démarre en mode checking
   isLoading = signal<boolean>(true); // Loading initial
+  
+  // Années disponibles de 2019 à l'année courante
+  availableYears: number[] = Array.from(
+    { length: new Date().getFullYear() - 2018 }, 
+    (_, i) => new Date().getFullYear() - i
+  );
   
   lastSync = computed(() => {
     // Formater la date de dernière sync
@@ -271,6 +414,27 @@ export class SyncActivitiesComponent {
     });
   }
 
+  async syncYear(year: number): Promise<void> {
+    if (confirm(`Synchroniser toutes les activités de ${year} ?`)) {
+      await this.syncService.syncByYear(year);
+    }
+  }
+
+  async syncAllYears(): Promise<void> {
+    if (confirm(
+      '⚠️ Attention : Cette opération va synchroniser TOUTES les années disponibles.\n\n' +
+      'Cela prendra plusieurs minutes et consommera vos quotas.\n\n' +
+      'Préférez synchroniser année par année.\n\n' +
+      'Continuer ?'
+    )) {
+      await this.syncService.syncMultipleYears(this.availableYears);
+    }
+  }
+
+  isYearSynced(year: number): boolean {
+    return this.status().syncedYears.includes(year);
+  }
+
   async checkForNewActivities(): Promise<void> {
     if (this.status().isInitialized) {
       this.isChecking.set(true);
@@ -280,22 +444,6 @@ export class SyncActivitiesComponent {
     } else {
       // Si pas encore initialisé, on arrête la vérification
       this.isChecking.set(false);
-    }
-  }
-
-  startFullSync(): void {
-    if (confirm('Voulez-vous vraiment lancer une synchronisation complète ? Cela peut prendre plusieurs minutes.')) {
-      this.syncService.fullSync();
-    }
-  }
-
-  forceResync(): void {
-    if (confirm(
-      '⚠️ Attention : Cette opération va re-synchroniser TOUTES vos activités et recalculer toutes les métriques.\n\n' +
-      'Cela prendra plusieurs minutes.\n\n' +
-      'Continuer ?'
-    )) {
-      this.syncService.fullSync();
     }
   }
 

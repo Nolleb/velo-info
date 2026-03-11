@@ -39,7 +39,7 @@ export class HomeComponent {
       icon: {
         name: 'distance',
         width: '100%',
-        height: '20px',
+        height: '25px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -48,8 +48,8 @@ export class HomeComponent {
       value: this.homeStore.latestActivity()?.total_elevation_gain.toFixed(2).toString() + ' m',
       icon: {
         name: 'elevation',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '22px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -58,8 +58,8 @@ export class HomeComponent {
       value: minutesToTimeString(this.homeStore.latestActivity()?.moving_time || 0),
       icon: {
         name: 'chrono',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -72,7 +72,7 @@ export class HomeComponent {
       icon: {
         name: 'distance',
         width: '100%',
-        height: '20px',
+        height: '25px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -81,8 +81,8 @@ export class HomeComponent {
       value: this.homeStore.globalActivities()?.totalElevation.toFixed(2).toString() + ' m',
       icon: {
         name: 'elevation',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '22px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -91,8 +91,8 @@ export class HomeComponent {
       value: minutesToTimeString(this.homeStore.globalActivities()?.totalTime || 0),
       icon: {
         name: 'chrono',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -102,7 +102,7 @@ export class HomeComponent {
       icon: {
         name: 'cycling',
         width: '100%',
-        height: '20px',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     }
@@ -115,7 +115,7 @@ export class HomeComponent {
       icon: {
         name: 'distance',
         width: '100%',
-        height: '20px',
+        height: '25px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -124,8 +124,8 @@ export class HomeComponent {
       value: this.homeStore.currentYearTotals()?.totalElevation.toFixed(2).toString() + ' m',
       icon: {
         name: 'elevation',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '22px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -134,8 +134,8 @@ export class HomeComponent {
       value: minutesToTimeString(this.homeStore.currentYearTotals()?.totalTime || 0),
       icon: {
         name: 'chrono',
-        width: '20px',
-        height: '100%',
+        width: '100%',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     },
@@ -145,7 +145,7 @@ export class HomeComponent {
       icon: {
         name: 'cycling',
         width: '100%',
-        height: '20px',
+        height: '30px',
         color: 'var(--grey-semi-light-color)',
       },
     }
@@ -161,7 +161,7 @@ export class HomeComponent {
           icon: {
             name: 'distance',
             width: '100%',
-            height: '20px',
+            height: '25px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -170,8 +170,8 @@ export class HomeComponent {
           value: (this.homeStore.currentMonthActivities()?.totalElevation.toFixed(2).toString() + ' m'),
           icon: {
             name: 'elevation',
-            width: '20px',
-            height: '100%',
+            width: '100%',
+            height: '22px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -180,8 +180,8 @@ export class HomeComponent {
           value: minutesToTimeString(this.homeStore.currentMonthActivities()?.totalTime || 0),
           icon: {
             name: 'chrono',
-            width: '20px',
-            height: '100%',
+            width: '100%',
+            height: '30px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -192,8 +192,8 @@ export class HomeComponent {
           value: this.homeStore.currentMonthActivities()?.activityCount || 0,
           icon: {
             name: 'cycling',
-            width: '24px',
-            height: '20px',
+            width: '100%',
+            height: '30px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -203,7 +203,7 @@ export class HomeComponent {
           icon: {
             name: 'energy',
             width: '100%',
-            height: '20px',
+            height: '30px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -212,8 +212,8 @@ export class HomeComponent {
           value: '90%',
           icon: {
             name: 'fatigue',
-            width: '20px',
-            height: '20px',
+            width: '100%',
+            height: '25px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -226,7 +226,7 @@ export class HomeComponent {
           icon: {
             name: 'regularity',
             width: '100%',
-            height: '20px',
+            height: '30px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -235,8 +235,8 @@ export class HomeComponent {
           value: '23%',
           icon: {
             name: 'earth',
-            width: '20px',
-            height: '100%',
+            width: '100%',
+            height: '30px',
             color: 'var(--grey-semi-light-color)',
           },
         },

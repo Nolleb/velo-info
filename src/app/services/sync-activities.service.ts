@@ -3,6 +3,7 @@ import { StravaService } from './strava.service';
 import { FirestoreService } from './firestore.service';
 import { MetricsService } from './metrics.service';
 import { StoredActivity } from '../models/strava.model';
+import { getMainRideZone, getRideZones } from '../shared/utils/stats.utils';
 
 export interface SyncStatus {
   isInitialized: boolean;
@@ -11,6 +12,8 @@ export interface SyncStatus {
   totalActivities: number;
   syncedActivities: number;
   error: string | null;
+  currentYear?: number;
+  syncedYears: number[];
 }
 
 @Injectable({
@@ -27,7 +30,8 @@ export class SyncActivitiesService {
     progress: 0,
     totalActivities: 0,
     syncedActivities: 0,
-    error: null
+    error: null,
+    syncedYears: []
   });
 
   async checkInitialization(): Promise<boolean> {
@@ -172,6 +176,88 @@ export class SyncActivitiesService {
     }
   }
 
+  async syncByYear(year: number): Promise<void> {
+    this.syncStatus.update(s => ({ 
+      ...s, 
+      isSyncing: true, 
+      error: null, 
+      progress: 0,
+      currentYear: year 
+    }));
+
+    try {
+      // Calculer les timestamps de début et fin d'année
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year, 11, 31, 23, 59, 59);
+      
+      const after = Math.floor(startOfYear.getTime() / 1000);
+      const before = Math.floor(endOfYear.getTime() / 1000);
+
+      let page = 1;
+      let totalSynced = 0;
+      const perPage = 200;
+
+      console.log(`🔄 Synchronisation de l'année ${year}...`);
+
+      while (true) {
+        const activities = await this.stravaService.getActivities(page, perPage, after, before);
+        
+        if (activities.length === 0) break;
+
+        for (const activity of activities) {
+          // Filtrer uniquement les activités de type "Ride" (vélo)
+          if (activity.type !== 'Ride') {
+            console.log(`Activité ignorée (${activity.type}): ${activity.name}`);
+            continue;
+          }
+          
+          await this.processActivity(activity);
+          totalSynced++;
+          this.syncStatus.update(s => ({ 
+            ...s, 
+            syncedActivities: totalSynced,
+            progress: Math.round((totalSynced / (page * perPage)) * 100)
+          }));
+        }
+
+        if (activities.length < perPage) break;
+        page++;
+      }
+
+      // Marquer l'année comme synchronisée
+      this.syncStatus.update(s => ({
+        ...s,
+        isSyncing: false,
+        isInitialized: true,
+        progress: 100,
+        syncedYears: [...s.syncedYears, year].sort((a, b) => b - a),
+        currentYear: undefined
+      }));
+
+      console.log(`✅ Année ${year} synchronisée : ${totalSynced} activités`);
+    } catch (error) {
+      console.error(`Erreur sync année ${year}:`, error);
+      this.syncStatus.update(s => ({ 
+        ...s, 
+        isSyncing: false, 
+        currentYear: undefined,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }));
+    }
+  }
+
+  async syncMultipleYears(years: number[]): Promise<void> {
+    for (const year of years) {
+      await this.syncByYear(year);
+      // Petite pause entre les années pour ne pas surcharger
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+
+  async getSyncedYears(): Promise<number[]> {
+    return this.syncStatus().syncedYears;
+  }
+
   async checkForNewActivities(): Promise<boolean> {
     try {
       // Récupérer les dernières activités sur Strava
@@ -209,21 +295,34 @@ export class SyncActivitiesService {
     let detailedData: any = {};
     try {
       const detail = await this.stravaService.getActivityDetail(activity.id);
-      
+      const map = await this.stravaService.getActivityMap(activity.id);
       // Filtrer UNIQUEMENT les segments favoris
       const starredSegments = detail.segment_efforts?.filter(
         (effort: any) => effort.segment?.starred === true
       ) || [];
-      
+
+      const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
+      const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
+      const distanceData = map.find(s => s.type === 'distance')?.data ?? [];
+
+      // Sauvegarder les données de map dans une collection séparée (sans échantillonnage)
+      const mapLatlng = (latlngData as [number, number][]).map(([lat, lng]) => ({ lat, lng }));
+      await this.firestoreService.saveActivityMap({
+        activityId: activity.id,
+        latlng: mapLatlng,
+        altitude: altitudeData as number[],
+        distance: distanceData as number[],
+        userId: 'default-user'
+      });
+
       detailedData = {
-        map: detail.map,
+        main_ride_zone: getMainRideZone(latlngData),
+        list_ride_zone: getRideZones(latlngData),
         segment_efforts: starredSegments
       };
       
       console.log(`✓ Activity ${activity.id}: ${starredSegments.length} starred segments`);
-      
-      // Délai de 5 secondes (au lieu de 10) pour accélérer
-      await new Promise(resolve => setTimeout(resolve, 5000));
+    
     } catch (error: any) {
       // En cas d'erreur (rate limit, etc), on sauvegarde quand même l'activité
       console.warn(`⚠ Activity ${activity.id} without details:`, error.message);

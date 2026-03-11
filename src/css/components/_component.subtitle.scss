@@ -9,17 +9,8 @@
   font-weight: bold;
   font-size: 20px;
   text-box-trim: trim-both;
-  
-  &.link {
-    background: var(--fourth-color);
-    color: white;
-  }
 
-  &--month{
-    background: var(--fourth-color);
-  }
-
-  &--activity{
+  &--active {
     background: var(--secondary-color);
     color: var(--white-color);
   }

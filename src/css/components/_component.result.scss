@@ -1,23 +1,15 @@
 .list-result {
-  list-style-type: none;
-  align-items: stretch;
+  align-items: center;
   display: flex;
   flex-flow: row wrap;
   list-style: none;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 0;
   padding-left: 0;
+  gap: 10px;
 
   &--last {
     justify-content: space-evenly;
-  }
-
-  &--block {
-    &:nth-child(even) {
-       background: var(--tertiary-color);
-      padding: 5px;
-      border-radius: 6px;
-    }
   }
 
   &__label {
@@ -47,16 +39,15 @@
     align-items: center;
     gap: 5px;
 
+    //background: color-mix(in srgb, var(--tertiary-color) 60%, white);
+    background: color-mix(in srgb, var(--fourth-color) 20%, white);
+    padding: 5px;
+    border-radius: 6px;
+
     &--stats-globales{
       flex-direction: row;
       gap: 20px;
       justify-content: space-between;
-    }
-
-    &--stats-globales:nth-child(even){
-      background-color: var(--tertiary-color);
-      padding: 5px;
-      border-radius: 6px;
     }
   }
 }

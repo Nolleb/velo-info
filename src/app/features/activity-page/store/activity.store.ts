@@ -24,12 +24,25 @@ export const ActivityStore = signalStore(
 
   withProps((store) => ({
     _activity: store._activitiesService.getActivityResource(store.activityID),
+    _activityMap: store._activitiesService.getActivityMapResource(store.activityID),
   })),
 
   // Add computed values (like selectors)
-  withComputed(({_activity}) => ({
+  withComputed(({_activity, _activityMap}) => ({
     activity: () => _activity.hasValue() ? _activity.value() : null,
     activityLoading: () => _activity.isLoading(),
+    activityMap: () => _activityMap.hasValue() ? _activityMap.value() : null,
+    activityMapLoading: () => _activityMap.isLoading(),
+  })),
+
+  withComputed(({_activityMap, _activity}) => ({
+    routes: (): [number, number][] | null => _activityMap.hasValue() ? _activityMap.value()?.latlng.map(p => [p.lat, p.lng] as [number, number]) ?? null : null,
+    altitudes: (): number[] | null => _activityMap.hasValue() ? _activityMap.value()?.altitude ?? null : null,
+    distances: (): number[] | null => _activityMap.hasValue() ? _activityMap.value()?.distance ?? null : null, 
+    starredSegments: () => {
+      const activity = _activity.hasValue() ? _activity.value() : null;
+      return activity ? activity.segment_efforts : [];
+    }
   })),
 
   withMethods((store) => ({
@@ -38,9 +51,9 @@ export const ActivityStore = signalStore(
     },
     reloadActivity() {
       store._activity.reload();
+      store._activityMap.reload();
     }
   })),
-
 
   withDevtools('ActivityStore')
 );

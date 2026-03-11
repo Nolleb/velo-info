@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StravaActivity } from '../models/strava.model';
+import { StravaActivity, StravaMap } from '../models/strava.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class StravaService {
     return this.accessToken;
   }
 
-  async getActivities(page: number = 1, perPage: number = 200, after?: number): Promise<StravaActivity[]> {
+  async getActivities(page: number = 1, perPage: number = 200, after?: number, before?: number): Promise<StravaActivity[]> {
     const token = await this.getAccessToken();
     const params = new URLSearchParams({
       page: page.toString(),
@@ -47,6 +47,10 @@ export class StravaService {
 
     if (after) {
       params.append('after', after.toString());
+    }
+
+    if (before) {
+      params.append('before', before.toString());
     }
 
     const response = await fetch(`${this.baseUrl}/athlete/activities?${params}`, {
@@ -68,6 +72,22 @@ export class StravaService {
 
     if (!response.ok) {
       throw new Error('Failed to fetch activity detail');
+    }
+
+    return response.json();
+  }
+
+  async getActivityMap(id: number): Promise<StravaMap[]> {
+    const token = await this.getAccessToken();
+    const params = new URLSearchParams({
+      keys: 'latlng,altitude,distance'
+    });
+    const response = await fetch(`${this.baseUrl}/activities/${id}/streams?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch activity map');
     }
 
     return response.json();

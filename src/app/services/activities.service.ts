@@ -1,7 +1,7 @@
 import { inject, Injectable, Signal } from "@angular/core";
 import { rxResource } from "@angular/core/rxjs-interop";
 import { doc, DocumentReference, Firestore, docData, collection, query, where, orderBy, collectionData } from "@angular/fire/firestore";
-import { getStarredSegments, LastActivity, MonthStats, StoredActivity, WeekActivity } from "../models/strava.model";
+import { getStarredSegments, LastActivity, MonthStats, StoredActivity, WeekActivity, ActivityMapData } from "../models/strava.model";
 import { map, of } from "rxjs";
 
 @Injectable({
@@ -138,6 +138,25 @@ export class ActivitiesService {
     });
   }
 
+  public getActivityMapResource(activityId: Signal<number | null>) {
+    return rxResource<ActivityMapData | null, number>({
+      params: () => activityId()!,
+      stream: ({params}) => {
+        if (!params) {
+          return of(null);
+        }
+        const activityDoc = doc(this.firestore, `users/${this.userId}/activity_maps/${params}`) as DocumentReference<ActivityMapData>;
+        return docData(activityDoc).pipe(
+          map(data => {
+            if (!data) return null;
+           
+            return data;
+          }),  
+        );
+      }
+    });
+  }
+
   public getLatestActivityResource() {
     return rxResource<LastActivity | null, void>({
       stream: () => {
@@ -158,7 +177,8 @@ export class ActivitiesService {
               moving_time: data[0]['moving_time'],
               device_name: data[0]['device_name'],
               total_elevation_gain: data[0]['total_elevation_gain'],
-              polyline: data[0]['map']?.polyline || ''
+              polyline: data[0]['map']?.summary_polyline || '',
+              main_area: data[0]['main_ride_zone'] || ''
             }) as LastActivity;
 
             act.distance = act.distance / 1000;

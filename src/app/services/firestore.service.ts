@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '@angular/fire/firestore';
-import { GlobalStats, MonthStats, StoredActivity } from '../models/strava.model';
+import { GlobalStats, MonthStats, StoredActivity, ActivityMapData } from '../models/strava.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,18 @@ export class FirestoreService {
     const activityRef = doc(this.firestore, `users/${this.userId}/activities/${activityId}`);
     const snapshot = await getDoc(activityRef);
     return snapshot.exists() ? snapshot.data() as StoredActivity : null;
+  }
+
+  // Données de map (collection séparée)
+  async saveActivityMap(mapData: ActivityMapData): Promise<void> {
+    const mapRef = doc(this.firestore, `users/${this.userId}/activity_maps/${mapData.activityId}`);
+    await setDoc(mapRef, mapData);
+  }
+
+  async getActivityMap(activityId: number): Promise<ActivityMapData | null> {
+    const mapRef = doc(this.firestore, `users/${this.userId}/activity_maps/${activityId}`);
+    const snapshot = await getDoc(mapRef);
+    return snapshot.exists() ? snapshot.data() as ActivityMapData : null;
   }
 
   // Stats globales
@@ -88,6 +100,12 @@ export class FirestoreService {
     const activitiesSnapshot = await getDocs(activitiesRef);
     const deleteActivitiesPromises = activitiesSnapshot.docs.map(doc => deleteDoc(doc.ref));
     await Promise.all(deleteActivitiesPromises);
+
+    // Supprimer toutes les maps
+    const mapsRef = collection(this.firestore, `users/${this.userId}/activity_maps`);
+    const mapsSnapshot = await getDocs(mapsRef);
+    const deleteMapsPromises = mapsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deleteMapsPromises);
 
     // Supprimer tous les mois
     const monthsRef = collection(this.firestore, `users/${this.userId}/months`);
