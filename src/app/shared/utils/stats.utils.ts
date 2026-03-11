@@ -1,6 +1,14 @@
 import { MonthStats } from "../../models/strava.model";
 import * as turf from '@turf/turf';
-import departements from '../data/geojson/departements.json';
+
+// Lazy loading du fichier GeoJSON
+let departementsCache: any = null;
+async function getDepartements() {
+  if (!departementsCache) {
+    departementsCache = await import('../data/geojson/departements.json');
+  }
+  return departementsCache.default;
+}
 
 export interface YearTotals {
   totalDistance: number;
@@ -51,9 +59,10 @@ export function calculateYearTotals(months: MonthStats[]): YearTotals {
   };
 }
 
-export function getMainRideZone(coords: number[] | [number, number][]) {
+export async function getMainRideZone(coords: number[] | [number, number][]) {
   if (!coords?.length) return null;
 
+  const departements = await getDepartements();
   const stats: Record<string, number> = {};
   const sampled = coords.filter((_, i) => i % 30 === 0) as [number, number][];
   sampled.forEach(([lat, lng]) => {
@@ -79,9 +88,10 @@ export function getMainRideZone(coords: number[] | [number, number][]) {
   return sorted.length ? sorted[0][0] : null;
 }
 
-export function getRideZones(coords: number[] | [number, number][]) {
+export async function getRideZones(coords: number[] | [number, number][]) {
   if (!coords?.length) return null;
 
+  const departements = await getDepartements();
   const sampled = coords.filter((_, i) => i % 30 === 0) as [number, number][];
   const departments = new Set();
 

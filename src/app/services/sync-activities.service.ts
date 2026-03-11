@@ -316,8 +316,8 @@ export class SyncActivitiesService {
       });
 
       detailedData = {
-        main_ride_zone: getMainRideZone(latlngData),
-        list_ride_zone: getRideZones(latlngData),
+        main_ride_zone: await getMainRideZone(latlngData),
+        list_ride_zone: await getRideZones(latlngData),
         segment_efforts: starredSegments
       };
       
