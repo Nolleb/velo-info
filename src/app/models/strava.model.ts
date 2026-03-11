@@ -53,7 +53,12 @@ export interface SegmentEffort {
   activity: Activity
   achievements: any[]
   start_date: string
-  distance: number
+  distance: number,
+  overallRanking?: {
+    gold: number | null;
+    silver: number | null;
+    bronze: number | null;
+  }
 }
 
 export interface Activity {

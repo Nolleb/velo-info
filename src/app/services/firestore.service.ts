@@ -33,6 +33,36 @@ export class FirestoreService {
     return snapshot.exists() ? snapshot.data() as ActivityMapData : null;
   }
 
+  // Récupérer les N meilleurs temps sur un segment
+  async getTopSegmentEfforts(segmentId: number, limit: number = 3): Promise<any[]> {
+    const activitiesRef = collection(this.firestore, `users/${this.userId}/activities`);
+    const snapshot = await getDocs(activitiesRef);
+    
+    const allEfforts: any[] = [];
+    
+    // Parcourir toutes les activités pour trouver les efforts sur ce segment
+    snapshot.docs.forEach(doc => {
+      const activity = doc.data() as StoredActivity;
+      if (activity.segment_efforts) {
+        activity.segment_efforts.forEach(effort => {
+          if (effort.segment.id === segmentId) {
+            allEfforts.push({
+              moving_time: effort.moving_time,
+              elapsed_time: effort.elapsed_time,
+              start_date: effort.start_date,
+              activity_id: activity.id
+            });
+          }
+        });
+      }
+    });
+    
+    // Trier par temps et prendre les N meilleurs
+    return allEfforts
+      .sort((a, b) => a.moving_time - b.moving_time)
+      .slice(0, limit);
+  }
+
   // Stats globales
   async getGlobalStats(): Promise<GlobalStats | null> {
     const statsRef = doc(this.firestore, `users/${this.userId}/stats/global`);

@@ -286,6 +286,10 @@ export class SyncActivitiesService {
   }
 
   private async processActivity(activity: any): Promise<void> {
+    // Vérifier si l'activité existe déjà
+    const existingActivity = await this.firestoreService.getActivity(activity.id);
+    const isNewActivity = existingActivity === null;
+    
     const metrics = this.metricsService.calculateMetrics(activity);
     const date = new Date(activity.start_date);
     const year = date.getFullYear();
@@ -301,27 +305,57 @@ export class SyncActivitiesService {
         (effort: any) => effort.segment?.starred === true
       ) || [];
 
+      // Enrichir chaque segment avec les 3 meilleurs temps (calculés localement)
+      const enrichedSegments = [];
+      for (const segment of starredSegments) {
+        try {
+          // Récupérer l'historique des temps sur ce segment depuis Firestore
+          const topEfforts = await this.firestoreService.getTopSegmentEfforts(segment.segment.id, 3);
+          enrichedSegments.push({
+            ...segment,
+            overallRanking: {
+              gold: topEfforts[0]?.moving_time ?? null,
+              silver: topEfforts[1]?.moving_time ?? null,
+              bronze: topEfforts[2]?.moving_time ?? null
+            }
+          });
+        } catch (error) {
+          console.warn(`Unable to compute best times for segment ${segment.segment.id}:`, error);
+          enrichedSegments.push({
+            ...segment,
+            overallRanking: { gold: null, silver: null, bronze: null }
+          });
+        }
+      }
+
       const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
       const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
       const distanceData = map.find(s => s.type === 'distance')?.data ?? [];
 
-      // Sauvegarder les données de map dans une collection séparée (sans échantillonnage)
-      const mapLatlng = (latlngData as [number, number][]).map(([lat, lng]) => ({ lat, lng }));
+      // Échantillonner les données pour éviter les limites Firestore (1 point sur 10)
+      const samplingRate = 10;
+      const sampledLatlng = (latlngData as [number, number][])
+        .filter((_, i) => i % samplingRate === 0)
+        .map(([lat, lng]) => ({ lat, lng }));
+      const sampledAltitude = (altitudeData as number[]).filter((_, i) => i % samplingRate === 0);
+      const sampledDistance = (distanceData as number[]).filter((_, i) => i % samplingRate === 0);
+
+      // Sauvegarder les données échantillonnées
       await this.firestoreService.saveActivityMap({
         activityId: activity.id,
-        latlng: mapLatlng,
-        altitude: altitudeData as number[],
-        distance: distanceData as number[],
+        latlng: sampledLatlng,
+        altitude: sampledAltitude,
+        distance: sampledDistance,
         userId: 'default-user'
       });
 
       detailedData = {
         main_ride_zone: await getMainRideZone(latlngData),
         list_ride_zone: await getRideZones(latlngData),
-        segment_efforts: starredSegments
+        segment_efforts: enrichedSegments
       };
       
-      console.log(`✓ Activity ${activity.id}: ${starredSegments.length} starred segments`);
+      console.log(`✓ Activity ${activity.id}: ${enrichedSegments.length} starred segments with rankings`);
     
     } catch (error: any) {
       // En cas d'erreur (rate limit, etc), on sauvegarde quand même l'activité
@@ -340,16 +374,19 @@ export class SyncActivitiesService {
 
     await this.firestoreService.saveActivity(storedActivity);
 
-    // Mettre à jour les stats mensuelles
-    await this.firestoreService.updateMonthStats(date.getFullYear(), date.getMonth() + 1, storedActivity);
+    // Mettre à jour les stats uniquement si c'est une nouvelle activité
+    if (isNewActivity) {
+      // Mettre à jour les stats mensuelles
+      await this.firestoreService.updateMonthStats(date.getFullYear(), date.getMonth() + 1, storedActivity);
 
-    // Mettre à jour les stats globales
-    await this.firestoreService.updateGlobalStats({
-      totalDistance: activity.distance / 1000,
-      totalElevation: activity.total_elevation_gain,
-      totalTime: activity.moving_time,
-      activityCount: 1,
-      lastActivityDate: activity.start_date
-    });
+      // Mettre à jour les stats globales
+      await this.firestoreService.updateGlobalStats({
+        totalDistance: activity.distance / 1000,
+        totalElevation: activity.total_elevation_gain,
+        totalTime: activity.moving_time,
+        activityCount: 1,
+        lastActivityDate: activity.start_date
+      });
+    }
   }
 }

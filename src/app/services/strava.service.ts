@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StravaActivity, StravaMap } from '../models/strava.model';
+import { SegmentEffort, StravaActivity, StravaMap } from '../models/strava.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({
@@ -92,4 +92,30 @@ export class StravaService {
 
     return response.json();
   }
+
+  // NOTE: L'endpoint /segments/{id}/all_efforts nécessite un abonnement Strava premium (erreur 402)
+  // Les meilleurs temps sont maintenant calculés localement via FirestoreService.getTopSegmentEfforts()
+  /*
+  async getSegmentEfforts(segmentId: number): Promise<SegmentEffort[]> {
+    const token = await this.getAccessToken();
+    
+    const response = await fetch(
+      `${this.baseUrl}/segments/${segmentId}/all_efforts`,
+      {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch segment efforts: ${response.status}`);
+    }
+
+    const efforts = await response.json();
+    
+    // Trier par temps (moving_time) et prendre les 3 meilleurs
+    return efforts
+      .sort((a: SegmentEffort, b: SegmentEffort) => a.moving_time - b.moving_time)
+      .slice(0, 3);
+  }
+  */
 }

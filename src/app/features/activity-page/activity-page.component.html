@@ -38,15 +38,6 @@
       ></app-activity-map-detail>
     </div>
 
-    @if(selectedSegmentData()) {
-      <div class="segment-topology">
-        <h3>{{ selectedSegmentData()!.segment.name }}</h3>
-        <div class="chart-container">
-          <canvas #topologyChart></canvas>
-        </div>
-      </div>
-    }
-
     <div class="grid-infos">
     <div class="grid-infos__column">
       <div class="grid-infos__label">&nbsp;</div>
@@ -106,3 +97,40 @@
   }
   </div>
 </div>
+
+<app-sidebar
+  [(isOpen)]="sidebarOpen"
+>
+  @if(selectedSegmentData()) {
+      <div class="segment-topology">
+        <div class="d-flex justify-content-center mb-20">
+          <h3 class="subtitle text-align-center">{{ selectedSegmentData()!.segment.name }}</h3>
+          
+        </div>
+        <div class="segment__data d-flex justify-content-space-between">
+          <div class="segment__data-item">
+            <div class="font-700">{{ selectedSegmentData()!.segment.distance | km }} km</div>
+            <div class="label-small">Distance</div>
+          </div>
+          <div></div>
+          <div class="segment__data-item">
+            <div class="font-700">{{ selectedSegmentData()!.segment.moving_time | minutesToTime }}</div>
+            <div class="label-small">Durée</div>
+            <div class="font-700">{{ selectedSegmentData()!.segment.segment.climb_category }}</div>
+            <div class="label-small">Catégorie</div>
+            
+            <div class="font-700">{{ selectedSegmentData()!.segment.segment.elevation_high }} - {{selectedSegmentData()!.segment.segment.elevation_low}}</div>
+            <div class="label-small">Catégorie</div>
+          </div>
+          <div></div>
+          <div class="segment__data-item">
+            <div class="font-700">{{ selectedSegmentData()!.segment.segment.average_grade }} %</div>
+            <div class="label-small font-300">Pente moyenne</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas #topologyChart></canvas>
+        </div>
+      </div>
+    }
+</app-sidebar>

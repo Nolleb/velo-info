@@ -11,6 +11,8 @@ import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle
 import { ActivityMapDetailComponent } from "../../shared/components/activity-map-detail/activity-map-detail.component";
 import { SegmentEffort } from "../../models/strava.model";
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
+import { KmPipe } from "../../shared/pipes/toKilometre";
 
 // Enregistrer Chart.js
 Chart.register(...registerables);
@@ -19,7 +21,7 @@ Chart.register(...registerables);
   selector: "app-activity-page",
   templateUrl: "./activity-page.component.html",
   styleUrls: ["./activity-page.component.scss"],
-  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent]
+  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent, SidebarComponent, KmPipe]
 })
 
 export class ActivityPageComponent implements OnInit, OnDestroy {
@@ -34,7 +36,7 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
   
   topologyChart = viewChild<ElementRef<HTMLCanvasElement>>('topologyChart');
   private chart: Chart | null = null;
-
+  sidebarOpen = signal(false);
   constructor() {
     // Effect pour créer le chart quand le canvas est disponible
     effect(() => {
@@ -157,6 +159,7 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
 
   onSegmentSelected(data: { segment: SegmentEffort; topology: { distances: number[]; altitudes: number[] } }) {
     this.selectedSegmentData.set(data);
+    this.sidebarOpen.set(true)
     // L'effect se chargera de créer le chart
   }
 

@@ -1,0 +1,14 @@
+<div class="sidebar" [class.open]="isOpen()">
+  <button class="btn--icon-only" (click)="toggle()">
+    <span
+      appSvgIcon
+      [height]="'10px'"
+      [width]="'10px'"
+      [iconName]="'close'"
+      class="d-flex"
+      [color]="'var(--secondary-color)'"
+    >
+    </span>
+  </button>
+  <ng-content></ng-content>
+</div>
