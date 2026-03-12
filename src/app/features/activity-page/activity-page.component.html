@@ -102,21 +102,26 @@
         <div class="d-flex justify-content-center mb-20">
           <h3 class="subtitle text-align-center">{{ selectedSegmentData()!.segment.name }}</h3>
         </div>
-        <div class="segment__data d-flex flex-direction-column gap-20">
-          <div class="segment__data-item">
-            <div class="font-700">{{ selectedSegmentData()!.segment.distance | km }} km</div>
-            <div class="label-small">Distance</div>
+        <div class="kpi gap-20 padding-10">
+          <div class="kpi__item gap-20 align-items-center">
+           <div class="d-flex flex-direction-column gap-5">
+             <div class="label-small font-300">Distance</div>
+             <div class="font-700">{{ selectedSegmentData()!.segment.distance | km }} km</div>
+           </div>
+           <div>&nbsp;·&nbsp;</div>
+           <div class="d-flex flex-direction-column gap-5">
+             <div class="label-small font-300">Durée</div>
+             <div class="font-700">{{ selectedSegmentData()!.segment.moving_time | minutesToTime }}</div>
+           </div> 
           </div>
-          <div></div>
-          <div class="segment__data-item">
-            <div class="font-700">{{ selectedSegmentData()!.segment.moving_time | minutesToTime }}</div>
-            <div class="label-small">Durée</div>
-            <div class="font-700">
+          <div class="kpi__item gap-20 align-items-center">
+            <div class="d-flex flex-direction-column gap-5">
+              <div class="label-small">Catégorie</div>
               <div class="d-flex position-relative fit-content align-items-center">
                 <span
                   appSvgIcon
-                  [height]="'30px'"
-                  [width]="'100%'"
+                  [height]="'20px'"
+                  [width]="'20px'"
                   [iconName]="'badge'"
                   [class]="'d-flex'"
                   [color]="CATEGORIES_MAPPING[selectedSegmentData()!.segment.segment.climb_category][0].background"
@@ -125,15 +130,14 @@
                   {{ CATEGORIES_MAPPING[selectedSegmentData()!.segment.segment.climb_category][0].category }}
                 </div>
               </div>
-              <div class="label-small">Catégorie</div>
+            </div>
+            <div>&nbsp;·&nbsp;</div>
+            <div class="d-flex flex-direction-column gap-5">
+              <div class="label-small font-300">Pente moyenne</div>
+              <div class="font-700">{{ selectedSegmentData()!.segment.segment.average_grade }} %</div>
             </div>
           </div>
-          <div></div>
-          <div class="segment__data-item">
-            <div class="font-700">{{ selectedSegmentData()!.segment.segment.average_grade }} %</div>
-            <div class="label-small font-300">Pente moyenne</div>
-          </div>
-          <div class="segment__data-item">
+          <div class="kpi__item flex-direction-column gap-10">
             <div class="label-small">Meilleurs temps</div>
             <div class="d-flex gap-10 align-items-center">
               <div class="d-flex gap-10 align-items-center">
@@ -145,7 +149,7 @@
                   [class]="'d-flex'"
                     [color]="'#FFD700'"
                   ></span>
-                <div class="font-700">{{ selectedSegmentData()!.segment.overallRanking?.gold ? (selectedSegmentData()!.segment.overallRanking?.gold! | minutesToTime) : 'N/A' }}</div>
+                <div class="font-700 font-size-14">{{ selectedSegmentData()!.segment.overallRanking?.gold ? (selectedSegmentData()!.segment.overallRanking?.gold! | minutesToTime) : 'N/A' }}</div>
               </div>
               <div class="d-flex gap-10 align-items-center">
                 <span
@@ -156,7 +160,7 @@
                   [class]="'d-flex'"
                   [color]="'#c0c0c0'"
                 ></span>
-                <div class="font-700">{{ selectedSegmentData()!.segment.overallRanking?.silver ? (selectedSegmentData()!.segment.overallRanking?.silver! | minutesToTime) : 'N/A' }}</div>
+                <div class="font-700 font-size-14">{{ selectedSegmentData()!.segment.overallRanking?.silver ? (selectedSegmentData()!.segment.overallRanking?.silver! | minutesToTime) : 'N/A' }}</div>
               </div>
               <div class="d-flex gap-10 align-items-center">
                 <span
@@ -167,12 +171,12 @@
                   [class]="'d-flex'"
                   [color]="'#CE8946'"
                 ></span>
-                <div class="font-700">{{ selectedSegmentData()!.segment.overallRanking?.bronze ? (selectedSegmentData()!.segment.overallRanking?.bronze! | minutesToTime) : 'N/A' }}</div>
+                <div class="font-700 font-size-14">{{ selectedSegmentData()!.segment.overallRanking?.bronze ? (selectedSegmentData()!.segment.overallRanking?.bronze! | minutesToTime) : 'N/A' }}</div>
               </div>
             </div>
           </div>
         </div>
-        <div class="chart-container">
+        <div class="chart-container mb-40">
           <canvas #topologyChart></canvas>
         </div>
       </div>
