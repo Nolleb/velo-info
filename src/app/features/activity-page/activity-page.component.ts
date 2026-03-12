@@ -13,6 +13,8 @@ import { SegmentEffort } from "../../models/strava.model";
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { SidebarComponent } from "../../shared/components/sidebar/sidebar.component";
 import { KmPipe } from "../../shared/pipes/toKilometre";
+import { SvgIconDirective } from "../../shared/ui/svg/svg-icon.directive";
+import { catgoriesMapping } from "../../shared/utils/category-difficulty";
 
 // Enregistrer Chart.js
 Chart.register(...registerables);
@@ -21,12 +23,14 @@ Chart.register(...registerables);
   selector: "app-activity-page",
   templateUrl: "./activity-page.component.html",
   styleUrls: ["./activity-page.component.scss"],
-  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent, SidebarComponent, KmPipe]
+  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent, SidebarComponent, KmPipe, SvgIconDirective]
 })
 
 export class ActivityPageComponent implements OnInit, OnDestroy {
   activityStore = inject(ActivityStore);
   id = input<string>();
+
+  CATEGORIES_MAPPING = catgoriesMapping;
   
   // Gestion du segment sélectionné
   selectedSegmentData = signal<{

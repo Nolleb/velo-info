@@ -1,16 +1,18 @@
 .svg-icon {
   &--secondary-color {
-    //fill: var(--secondary-color);
-        //fill: var(--fourth-color);
-            fill: color-mix(in srgb, var(--primary-color) 80%, #000);
+    fill: var(--secondary-color);
+  }
+
+  &--color {
+    fill: color-mix(in srgb, var(--primary-color) 80%, #000);
   }
 
   &--primary-color {
     fill: var(--primary-color);
   }
 
-  &--color {
-    fill: color-mix(in srgb, var(--primary-color) 20%, #000);
+  &--shadow-light {
+    fill: #4e2d2314;
   }
 }
 

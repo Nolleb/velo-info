@@ -8,3 +8,7 @@ $widths: 20, 30, 50, 80, 90, 100;
     width: calc($size * 1%);
   }
 }
+
+.fit-content {
+  width: fit-content;
+}

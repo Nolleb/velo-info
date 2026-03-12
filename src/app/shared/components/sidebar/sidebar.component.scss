@@ -19,6 +19,7 @@
   transform: translateX(0);
   visibility: visible;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .btn--icon-only {
