@@ -1,14 +1,9 @@
 <div class="d-flex flex-direction-column gap-20">
   @for (row of rowsToDisplay(); track $index) {
-    <ul 
-      class="list-result"
-      [class.list-result--last]="row.length < 3"
-      [class.list-result--stats-globales]="isStatsGlobales()"
-    >
+    <ul class="kpi">
       @for (item of row; track $index; let isLast = $last) {
         <li 
-          class="list-result__item"
-          [class.list-result__item--stats-globales]="isStatsGlobales()"
+          class="kpi__item"
         >        
           <div class="d-flex gap-10 align-items-center">
             <span

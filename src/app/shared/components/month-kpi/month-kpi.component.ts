@@ -100,7 +100,7 @@ export class MonthKpiComponent {
         value: '23%',
         icon: {
           name: 'earth',
-          width: '100%',
+          width: '30px',
           height: '30px',
           color: 'var(--grey-semi-light-color)',
         },

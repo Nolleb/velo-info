@@ -6,15 +6,24 @@
 
   &--column {
     flex-direction: column;
+    flex: 1;
   }
 
   &__item {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
     background: color-mix(in srgb, var(--fourth-color) 20%, white);
     padding: 5px;
     border-radius: 6px;
+    margin-top: auto;
+    justify-content: center;
+    width: 100%;
+
+    &:first-child {
+      margin-top: initial;
+    }
+
+    .kpi--column & {
+      padding: 20px;
+    }
   }
 }
