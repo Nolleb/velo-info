@@ -27,9 +27,9 @@
         [year]="year()"
         [month]="month"
       >
-        <app-global-result
-          [block]="getMonthStats(month)"
-        ></app-global-result>
+        <app-month-result
+          [results]="getMonthStats(month)"
+        ></app-month-result>
       </app-card-infos>
     } 
   }

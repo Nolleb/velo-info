@@ -1,7 +1,7 @@
 import { inject, Injectable, Signal } from "@angular/core";
 import { rxResource } from "@angular/core/rxjs-interop";
 import { doc, DocumentReference, Firestore, docData, collection, query, where, orderBy, collectionData } from "@angular/fire/firestore";
-import { getStarredSegments, LastActivity, MonthStats, StoredActivity, WeekActivity, ActivityMapData } from "../models/strava.model";
+import { getStarredSegments, LastActivity, MonthStats, StoredActivity, WeekActivity } from "../models/strava.model";
 import { map, of } from "rxjs";
 
 @Injectable({
@@ -131,25 +131,6 @@ export class ActivitiesService {
             if (!data) return null;
            
             data.distance = data.distance / 1000;
-            return data;
-          }),  
-        );
-      }
-    });
-  }
-
-  public getActivityMapResource(activityId: Signal<number | null>) {
-    return rxResource<ActivityMapData | null, number>({
-      params: () => activityId()!,
-      stream: ({params}) => {
-        if (!params) {
-          return of(null);
-        }
-        const activityDoc = doc(this.firestore, `users/${this.userId}/activity_maps/${params}`) as DocumentReference<ActivityMapData>;
-        return docData(activityDoc).pipe(
-          map(data => {
-            if (!data) return null;
-           
             return data;
           }),  
         );

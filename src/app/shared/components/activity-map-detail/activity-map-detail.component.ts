@@ -12,8 +12,6 @@ import { SegmentEffort } from "../../../models/strava.model";
 export class ActivityMapDetailComponent implements AfterViewInit, OnDestroy {
 
   latlng = input<[number, number][] | null | undefined>();
-  altitudes = input<number[] | null | undefined>();
-  distances = input<number[] | null | undefined>();
   starredSegments = input<SegmentEffort[] | null | undefined>(); 
 
   // Output pour envoyer les données au parent
@@ -138,13 +136,20 @@ export class ActivityMapDetailComponent implements AfterViewInit, OnDestroy {
   }
 
   onSegmentClick(segment: SegmentEffort) {
-    const startIndex = segment.start_index;
-    const endIndex = segment.end_index;
-  
-    // Extraire la topologie du segment
-    const segmentAltitudes = this.altitudes()?.slice(startIndex, endIndex + 1) || [];
-    const segmentDistances = this.distances()?.slice(startIndex, endIndex + 1) || [];
+    // Utiliser la topologie embarquée dans le segment
+    if (!segment.topology) {
+      console.warn('Segment sans topologie:', segment);
+      return;
+    }
+    
+    const segmentAltitudes = segment.topology.altitudes;
+    const segmentDistances = segment.topology.distances;
       
+    console.info('Segment clicked:', segment.name);
+    console.info('Segment altitudes:', segmentAltitudes);
+    console.info('Segment distances:', segmentDistances);
+    
+    // Convertir les distances en km
     const distancesKm = segmentDistances.map(d => d / 1000);
     
     // Émettre l'événement vers le parent

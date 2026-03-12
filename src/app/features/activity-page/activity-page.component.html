@@ -2,8 +2,6 @@
 @let activityLoading = activityStore.activityLoading();
 @let latlng = activityStore.routes();
 @let starredSegments = activityStore.starredSegments();
-@let altitudes = activityStore.altitudes();
-@let distances = activityStore.distances();
 
 <div class="content">
   <div class="block block--first">
@@ -31,8 +29,6 @@
     <div class="map-container">
       <app-activity-map-detail 
         [latlng]="latlng"
-        [altitudes]="altitudes"
-        [distances]="distances"
         [starredSegments]="starredSegments"
         (segmentSelected)="onSegmentSelected($event)"
       ></app-activity-map-detail>

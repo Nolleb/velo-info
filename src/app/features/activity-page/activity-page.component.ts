@@ -158,12 +158,14 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
   }
 
   onSegmentSelected(data: { segment: SegmentEffort; topology: { distances: number[]; altitudes: number[] } }) {
+    console.info('Segment selected:', data);
     this.selectedSegmentData.set(data);
     this.sidebarOpen.set(true)
     // L'effect se chargera de créer le chart
   }
 
   private createTopologyChart(distances: number[], altitudes: number[]) {
+    console.info('Creating topology chart with distances:', distances, 'and altitudes:', altitudes);
     const canvas = this.topologyChart()?.nativeElement;
     if (!canvas) return;
     

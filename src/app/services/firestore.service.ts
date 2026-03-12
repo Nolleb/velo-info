@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '@angular/fire/firestore';
-import { GlobalStats, MonthStats, StoredActivity, ActivityMapData } from '../models/strava.model';
+import { GlobalStats, MonthStats, StoredActivity } from '../models/strava.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,16 +21,20 @@ export class FirestoreService {
     return snapshot.exists() ? snapshot.data() as StoredActivity : null;
   }
 
-  // Données de map (collection séparée)
-  async saveActivityMap(mapData: ActivityMapData): Promise<void> {
-    const mapRef = doc(this.firestore, `users/${this.userId}/activity_maps/${mapData.activityId}`);
-    await setDoc(mapRef, mapData);
+  async getActivitiesByMonth(year: number, month: number): Promise<StoredActivity[]> {
+    const monthId = `${year}-${month.toString().padStart(2, '0')}`;
+    const activitiesRef = collection(this.firestore, `users/${this.userId}/activities`);
+    const snapshot = await getDocs(activitiesRef);
+    
+    return snapshot.docs
+      .map(doc => doc.data() as StoredActivity)
+      .filter(activity => activity.month === monthId);
   }
 
-  async getActivityMap(activityId: number): Promise<ActivityMapData | null> {
-    const mapRef = doc(this.firestore, `users/${this.userId}/activity_maps/${activityId}`);
-    const snapshot = await getDoc(mapRef);
-    return snapshot.exists() ? snapshot.data() as ActivityMapData : null;
+  async getAllActivities(): Promise<StoredActivity[]> {
+    const activitiesRef = collection(this.firestore, `users/${this.userId}/activities`);
+    const snapshot = await getDocs(activitiesRef);
+    return snapshot.docs.map(doc => doc.data() as StoredActivity);
   }
 
   // Récupérer les N meilleurs temps sur un segment
@@ -70,26 +74,65 @@ export class FirestoreService {
     return snapshot.exists() ? snapshot.data() as GlobalStats : null;
   }
 
-  async updateGlobalStats(stats: Partial<GlobalStats>): Promise<void> {
+  async setGlobalStats(stats: GlobalStats): Promise<void> {
     const statsRef = doc(this.firestore, `users/${this.userId}/stats/global`);
-    const current = await this.getGlobalStats();
+    await setDoc(statsRef, stats);
+  }
+
+  async recalculateGlobalStats(): Promise<void> {
+    const activitiesRef = collection(this.firestore, `users/${this.userId}/activities`);
+    const snapshot = await getDocs(activitiesRef);
     
-    const updated: GlobalStats = {
-      totalDistance: (current?.totalDistance || 0) + (stats.totalDistance || 0),
-      totalElevation: (current?.totalElevation || 0) + (stats.totalElevation || 0),
-      totalTime: (current?.totalTime || 0) + (stats.totalTime || 0),
-      activityCount: (current?.activityCount || 0) + (stats.activityCount || 0),
-      lastActivityDate: stats.lastActivityDate || current?.lastActivityDate || null,
+    const activities = snapshot.docs.map(doc => doc.data() as StoredActivity);
+    
+    if (activities.length === 0) {
+      console.log(`📊 No activities, clearing global stats`);
+      await this.setGlobalStats({
+        totalDistance: 0,
+        totalElevation: 0,
+        totalTime: 0,
+        activityCount: 0,
+        lastActivityDate: null,
+        lastSyncDate: new Date().toISOString(),
+        userId: this.userId
+      });
+      return;
+    }
+
+    // Calculer from scratch
+    let totalDistance = 0;
+    let totalElevation = 0;
+    let totalTime = 0;
+    let lastActivityDate: string | null = null;
+
+    for (const activity of activities) {
+      totalDistance += activity.distance / 1000; // Convertir en km
+      totalElevation += activity.total_elevation_gain;
+      totalTime += activity.moving_time;
+      
+      // Trouver la dernière activité
+      if (!lastActivityDate || new Date(activity.start_date) > new Date(lastActivityDate)) {
+        lastActivityDate = activity.start_date;
+      }
+    }
+
+    const stats: GlobalStats = {
+      totalDistance,
+      totalElevation,
+      totalTime,
+      activityCount: activities.length,
+      lastActivityDate,
       lastSyncDate: new Date().toISOString(),
       userId: this.userId
     };
 
-    await setDoc(statsRef, updated);
-  }
+    console.log(`📊 Recalculated global stats:`, {
+      count: activities.length,
+      distance: totalDistance.toFixed(2) + ' km',
+      elevation: totalElevation + ' m'
+    });
 
-  async setGlobalStats(stats: GlobalStats): Promise<void> {
-    const statsRef = doc(this.firestore, `users/${this.userId}/stats/global`);
-    await setDoc(statsRef, stats);
+    await this.setGlobalStats(stats);
   }
 
   // Stats mensuelles
@@ -100,27 +143,72 @@ export class FirestoreService {
     return snapshot.exists() ? snapshot.data() as MonthStats : null;
   }
 
-  async updateMonthStats(year: number, month: number, activity: StoredActivity): Promise<void> {
+  // Recalculer les stats d'un mois depuis toutes les activités (ne plus incrémenter)
+  async recalculateMonthStats(year: number, month: number): Promise<void> {
     const monthId = `${year}-${month.toString().padStart(2, '0')}`;
     const monthRef = doc(this.firestore, `users/${this.userId}/months/${monthId}`);
-    const current = await this.getMonthStats(year, month);
+    
+    // Récupérer TOUTES les activités du mois
+    const activities = await this.getActivitiesByMonth(year, month);
+    
+    if (activities.length === 0) {
+      console.log(`📊 No activities for ${monthId}, clearing stats`);
+      await setDoc(monthRef, {
+        year,
+        month,
+        totalDistance: 0,
+        totalElevation: 0,
+        totalTime: 0,
+        activityCount: 0,
+        avgIntensity: 0,
+        avgFatigue: 0,
+        userId: this.userId
+      });
+      return;
+    }
 
-    const distanceKm = activity.distance / 1000;
-    const count = (current?.activityCount || 0) + 1;
+    // Calculer from scratch
+    let totalDistance = 0;
+    let totalElevation = 0;
+    let totalTime = 0;
+    let totalIntensity = 0;
+    let totalFatigue = 0;
 
-    const updated: MonthStats = {
+    for (const activity of activities) {
+      totalDistance += activity.distance / 1000; // Convertir en km
+      totalElevation += activity.total_elevation_gain;
+      totalTime += activity.moving_time;
+      totalIntensity += activity.metrics.intensity;
+      totalFatigue += activity.metrics.fatigue;
+    }
+
+    const count = activities.length;
+
+    const stats: MonthStats = {
       year,
       month,
-      totalDistance: (current?.totalDistance || 0) + distanceKm,
-      totalElevation: (current?.totalElevation || 0) + activity.total_elevation_gain,
-      totalTime: (current?.totalTime || 0) + activity.moving_time,
+      totalDistance,
+      totalElevation,
+      totalTime,
       activityCount: count,
-      avgIntensity: ((current?.avgIntensity || 0) * (count - 1) + activity.metrics.intensity) / count,
-      avgFatigue: ((current?.avgFatigue || 0) * (count - 1) + activity.metrics.fatigue) / count,
+      avgIntensity: totalIntensity / count,
+      avgFatigue: totalFatigue / count,
       userId: this.userId
     };
 
-    await setDoc(monthRef, updated);
+    console.log(`📊 Recalculated stats for ${monthId}:`, {
+      count,
+      distance: totalDistance.toFixed(2) + ' km',
+      elevation: totalElevation + ' m'
+    });
+
+    await setDoc(monthRef, stats);
+  }
+
+  async setMonthStats(stats: MonthStats): Promise<void> {
+    const monthId = `${stats.year}-${stats.month.toString().padStart(2, '0')}`;
+    const monthRef = doc(this.firestore, `users/${this.userId}/months/${monthId}`);
+    await setDoc(monthRef, stats);
   }
 
   // Nettoyer toutes les données pour un full sync

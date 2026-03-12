@@ -77,6 +77,30 @@ export class SyncActivitiesService {
         page++;
       }
 
+      console.log(`✅ ${totalSynced} activités synchronisées`);
+      
+      // Recalculer les stats de toutes les années/mois
+      console.log(`🔄 Recalcul de toutes les stats...`);
+      const allActivities = await this.firestoreService.getAllActivities();
+      const yearMonths = new Set<string>();
+      
+      for (const activity of allActivities) {
+        const date = new Date(activity.start_date);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        yearMonths.add(`${year}-${month}`);
+      }
+      
+      console.log(`🔄 Recalcul des stats pour ${yearMonths.size} mois...`);
+      for (const yearMonth of yearMonths) {
+        const [year, month] = yearMonth.split('-').map(Number);
+        await this.firestoreService.recalculateMonthStats(year, month);
+      }
+      
+      // Recalculer les stats globales
+      await this.firestoreService.recalculateGlobalStats();
+      console.log(`✅ Toutes les stats recalculées`);
+
       this.syncStatus.update(s => ({ 
         ...s, 
         isSyncing: false, 
@@ -109,15 +133,35 @@ export class SyncActivitiesService {
       // Filtrer uniquement les activités Ride
       const rideActivities = activities.filter(a => a.type === 'Ride');
 
+      // Collecter les mois affectés pour recalculer les stats
+      const affectedMonths = new Set<string>();
+
       for (const activity of rideActivities) {
         await this.processActivity(activity);
+        
+        // Ajouter le mois aux mois affectés
+        const date = new Date(activity.start_date);
+        const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        affectedMonths.add(monthKey);
       }
+
+      // Recalculer les stats des mois affectés
+      console.log(`🔄 Recalcul des stats pour ${affectedMonths.size} mois...`);
+      for (const monthKey of affectedMonths) {
+        const [year, month] = monthKey.split('-').map(Number);
+        await this.firestoreService.recalculateMonthStats(year, month);
+      }
+
+      // Recalculer les stats globales
+      await this.firestoreService.recalculateGlobalStats();
 
       this.syncStatus.update(s => ({ 
         ...s, 
         isSyncing: false,
         syncedActivities: s.syncedActivities + rideActivities.length
       }));
+      
+      console.log(`✅ Sync incrémentale terminée, stats recalculées`);
     } catch (error) {
       console.error('Incremental sync error:', error);
       this.syncStatus.update(s => ({ 
@@ -146,18 +190,12 @@ export class SyncActivitiesService {
         throw new Error('Aucune activité de type Ride trouvée dans les dernières activités');
       }
 
-      // Vérifier si cette activité existe déjà
-      const existing = await this.firestoreService.getActivity(lastRideActivity.id);
-      if (existing) {
-        this.syncStatus.update(s => ({ 
-          ...s, 
-          isSyncing: false,
-          error: 'Cette activité est déjà synchronisée'
-        }));
-        return;
-      }
-
       await this.processActivity(lastRideActivity);
+
+      // Recalculer les stats du mois de cette activité
+      const date = new Date(lastRideActivity.start_date);
+      await this.firestoreService.recalculateMonthStats(date.getFullYear(), date.getMonth() + 1);
+      await this.firestoreService.recalculateGlobalStats();
 
       this.syncStatus.update(s => ({ 
         ...s, 
@@ -166,6 +204,8 @@ export class SyncActivitiesService {
         isInitialized: true,
         error: null
       }));
+      
+      console.log(`✅ Dernière activité synchronisée et stats recalculées`);
     } catch (error) {
       console.error('Last activity sync error:', error);
       this.syncStatus.update(s => ({ 
@@ -235,6 +275,19 @@ export class SyncActivitiesService {
       }));
 
       console.log(`✅ Année ${year} synchronisée : ${totalSynced} activités`);
+      
+      // Recalculer les stats de tous les mois de l'année
+      console.log(`🔄 Recalcul des stats mensuelles pour ${year}...`);
+      for (let month = 1; month <= 12; month++) {
+        await this.firestoreService.recalculateMonthStats(year, month);
+      }
+      
+      // Recalculer les stats globales
+      console.log(`🔄 Recalcul des stats globales...`);
+      await this.firestoreService.recalculateGlobalStats();
+      
+      console.log(`✅ Stats recalculées pour ${year}`);
+      
     } catch (error) {
       console.error(`Erreur sync année ${year}:`, error);
       this.syncStatus.update(s => ({ 
@@ -286,9 +339,7 @@ export class SyncActivitiesService {
   }
 
   private async processActivity(activity: any): Promise<void> {
-    // Vérifier si l'activité existe déjà
-    const existingActivity = await this.firestoreService.getActivity(activity.id);
-    const isNewActivity = existingActivity === null;
+    console.log(`📊 Processing activity ${activity.id} (${activity.name})`);
     
     const metrics = this.metricsService.calculateMetrics(activity);
     const date = new Date(activity.start_date);
@@ -305,18 +356,33 @@ export class SyncActivitiesService {
         (effort: any) => effort.segment?.starred === true
       ) || [];
 
-      // Enrichir chaque segment avec les 3 meilleurs temps (calculés localement)
+      const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
+      const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
+      const distanceData = map.find(s => s.type === 'distance')?.data ?? [];
+
+      // Enrichir chaque segment avec les 3 meilleurs temps ET la topologie
       const enrichedSegments = [];
       for (const segment of starredSegments) {
         try {
           // Récupérer l'historique des temps sur ce segment depuis Firestore
           const topEfforts = await this.firestoreService.getTopSegmentEfforts(segment.segment.id, 3);
+          
+          // Extraire la topologie du segment
+          const startIndex = segment.start_index;
+          const endIndex = segment.end_index;
+          const segmentAltitudes = (altitudeData as number[]).slice(startIndex, endIndex + 1);
+          const segmentDistances = (distanceData as number[]).slice(startIndex, endIndex + 1);
+          
           enrichedSegments.push({
             ...segment,
             overallRanking: {
               gold: topEfforts[0]?.moving_time ?? null,
               silver: topEfforts[1]?.moving_time ?? null,
               bronze: topEfforts[2]?.moving_time ?? null
+            },
+            topology: {
+              altitudes: segmentAltitudes,
+              distances: segmentDistances
             }
           });
         } catch (error) {
@@ -328,39 +394,17 @@ export class SyncActivitiesService {
         }
       }
 
-      const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
-      const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
-      const distanceData = map.find(s => s.type === 'distance')?.data ?? [];
-
-      // Échantillonner les données pour éviter les limites Firestore (1 point sur 10)
-      const samplingRate = 10;
-      const sampledLatlng = (latlngData as [number, number][])
-        .filter((_, i) => i % samplingRate === 0)
-        .map(([lat, lng]) => ({ lat, lng }));
-      const sampledAltitude = (altitudeData as number[]).filter((_, i) => i % samplingRate === 0);
-      const sampledDistance = (distanceData as number[]).filter((_, i) => i % samplingRate === 0);
-
-      // Sauvegarder les données échantillonnées
-      await this.firestoreService.saveActivityMap({
-        activityId: activity.id,
-        latlng: sampledLatlng,
-        altitude: sampledAltitude,
-        distance: sampledDistance,
-        userId: 'default-user'
-      });
-
       detailedData = {
         main_ride_zone: await getMainRideZone(latlngData),
         list_ride_zone: await getRideZones(latlngData),
         segment_efforts: enrichedSegments
       };
       
-      console.log(`✓ Activity ${activity.id}: ${enrichedSegments.length} starred segments with rankings`);
+      console.log(`✓ Activity ${activity.id}: ${enrichedSegments.length} starred segments`);
     
     } catch (error: any) {
       // En cas d'erreur (rate limit, etc), on sauvegarde quand même l'activité
       console.warn(`⚠ Activity ${activity.id} without details:`, error.message);
-      // Pas de délai si erreur, on continue rapidement
     }
     
     const storedActivity: StoredActivity = {
@@ -373,20 +417,6 @@ export class SyncActivitiesService {
     };
 
     await this.firestoreService.saveActivity(storedActivity);
-
-    // Mettre à jour les stats uniquement si c'est une nouvelle activité
-    if (isNewActivity) {
-      // Mettre à jour les stats mensuelles
-      await this.firestoreService.updateMonthStats(date.getFullYear(), date.getMonth() + 1, storedActivity);
-
-      // Mettre à jour les stats globales
-      await this.firestoreService.updateGlobalStats({
-        totalDistance: activity.distance / 1000,
-        totalElevation: activity.total_elevation_gain,
-        totalTime: activity.moving_time,
-        activityCount: 1,
-        lastActivityDate: activity.start_date
-      });
-    }
+    console.log(`✅ Activity ${activity.id} saved`);
   }
 }

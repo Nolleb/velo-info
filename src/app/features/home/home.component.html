@@ -3,6 +3,8 @@
 @let currentMonthActivitiesLoading = homeStore.currentMonthActivitiesLoading();
 @let currentYearActivitiesLoading = homeStore.currentYearActivitiesLoading();
 @let globalActivitiesLoading = homeStore.globalActivitiesLoading();
+@let currentMonthActivities = homeStore.currentMonthActivities();
+
 
 <div class="content">
   <div class="block block--first" (click)="onOpenWeekPage(currentMonth, currentYear)">
@@ -12,9 +14,9 @@
     @if(currentMonthActivitiesLoading) {
       <app-cycle-loader></app-cycle-loader>
     } @else {
-      <app-global-result
-        [block]="statsMonth()"
-      ></app-global-result>
+      <app-month-result
+        [results]="currentMonthActivities"
+      ></app-month-result>
     }
   </div>
   

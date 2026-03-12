@@ -1,0 +1,15 @@
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(100px, 1fr));
+  gap: 20px;
+  align-items: center;
+}
+
+.kpi-graph {
+  background: color-mix(in srgb, var(--primary-color) 40%, white);
+  padding: 6px;
+  border-radius: 6px;
+  &__subtitle {
+    color: var(--grey-semi-light-color);
+  }
+}

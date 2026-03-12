@@ -59,6 +59,11 @@ export interface SegmentEffort {
     silver: number | null;
     bronze: number | null;
   }
+  // Topologie du segment (stockée directement avec le segment)
+  topology?: {
+    altitudes: number[];
+    distances: number[]; // en mètres
+  }
 }
 
 export interface Activity {
@@ -130,15 +135,6 @@ export interface StoredActivity extends StravaActivity {
   userId: string;
   month: string; // Format: 'YYYY-MM'
   year: number;
-}
-
-// Interface pour les données de map (stockées séparément)
-export interface ActivityMapData {
-  activityId: number;
-  latlng: { lat: number; lng: number }[];
-  altitude: number[];
-  distance: number[];
-  userId: string;
 }
 
 // Helper pour filtrer les segments favoris

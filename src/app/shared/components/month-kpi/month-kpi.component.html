@@ -1,0 +1,23 @@
+<ul 
+  class="kpi gap-10"
+  [class.kpi--column]="!isPrimary()"
+>
+@for (item of finalResultsToDisplay(); track $index) {
+  <li class="kpi__item">        
+    <div class="d-flex gap-10 align-items-center">
+      <span
+        appSvgIcon
+        [height]="item.icon.height"
+        [width]="item.icon.width"
+        [iconName]="item.icon.name"
+        [class]="'d-flex'"
+        [color]="item.icon.color"
+      ></span>
+      <div class="d-flex-flex-direction-column gap-5">
+        <div class="font-600 list-result__result">{{ item.value }}</div>
+        <div class="list-result__label font-300">{{ item.label }}</div>
+      </div>
+    </div>
+  </li>  
+}
+</ul>

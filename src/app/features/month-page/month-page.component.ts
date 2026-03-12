@@ -9,12 +9,13 @@ import { ResultCriterion, ResultCriterionBlock } from "../../models/result-crite
 import { minutesToTimeString } from "../../shared/utils/time.utils";
 import { WeekStore } from "../week-page/store/week.store";
 import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
+import { MonthResultComponent } from "../../shared/components/month-result/month-result.component";
 
 @Component({
   selector: "app-month-page",
   templateUrl: "./month-page.component.html",
   styleUrls: ["./month-page.component.scss"],
-  imports: [CardInfosComponent, GlobalResultComponent, CycleLoaderComponent]
+  imports: [CardInfosComponent, GlobalResultComponent, CycleLoaderComponent, MonthResultComponent]
 })
 export class MonthPageComponent implements OnInit {
 
@@ -99,107 +100,15 @@ export class MonthPageComponent implements OnInit {
     return months.reverse();
   });
 
-  getMonthStats(monthIndex: number): ResultCriterionBlock {
+
+  getMonthStats(monthIndex: number) {
     const monthStats = this.monthStore.yearActivities().find(m => m.month === monthIndex + 1);
     
     if (!monthStats) {
-      return { rows: [] };
+      return null;
     }
 
-    return   {
-      rows: [
-        // Ligne 1 : Distance, Dénivelé, Temps
-        [
-          {
-            label: 'Distance',
-            value: (monthStats?.totalDistance.toFixed(2).toString() + ' kms'),
-            icon: {
-              name: 'distance',
-              width: '100%',
-              height: '25px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-          {
-            label: 'Dénivelé',
-            value: (monthStats?.totalElevation.toFixed(2).toString() + ' m'),
-            icon: {
-              name: 'elevation',
-              width: '100%',
-              height: '22px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-          {
-            label: 'Temps',
-            value: minutesToTimeString(monthStats?.totalTime || 0),
-            icon: {
-              name: 'chrono',
-              width: '100%',
-              height: '30px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-        ],
-        // Ligne 2 : Activités, Intensité, Fatigue
-        [
-          {
-            label: 'Activités',
-            value: monthStats?.activityCount || 0,
-            icon: {
-              name: 'cycling',
-              width: '100%',
-              height: '30px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-          {
-            label: 'Intensité',
-            value: '67%',
-            icon: {
-              name: 'energy',
-              width: '100%',
-              height: '30px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-          {
-            label: 'Fatigue',
-            value: '90%',
-            icon: {
-              name: 'fatigue',
-              width: '100%',
-              height: '25px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-        ],
-        // Ligne 3 : Régularité, Exploration
-        [
-          {
-            label: 'Régularité',
-            value: '93%',
-            icon: {
-              name: 'regularity',
-              width: '100%',
-              height: '30px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-          {
-            label: 'Exploration',
-            value: '23%',
-            icon: {
-              name: 'earth',
-              width: '100%',
-              height: '30px',
-              color: 'var(--grey-semi-light-color)',
-            },
-          },
-        ]
-      ]
-    }
-    
+    return monthStats
   }
 
   ngOnInit(): void {

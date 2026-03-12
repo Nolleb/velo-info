@@ -1,0 +1,32 @@
+<div class="d-flex gap-20 flex-direction-column">
+  <app-month-kpi
+    [results]="results()"
+    [isPrimary]="true"
+  ></app-month-kpi>
+  <div class="month-grid">
+    <div class="kpi-graph">
+      <div class="text-align-center font-700 font-size-14 mb-10">
+        Objectif du mois
+      </div>
+      <div class="d-flex flex-direction-column align-items-center mb-20">
+        <div class="kpi-graph__subtitle font-300 font-size-12">{{currentDistanceObjective()}} kms</div>
+        <app-progress-chart 
+          [value]="currentDistanceValue()"
+          [objective]="currentDistanceObjective()"
+        ></app-progress-chart>
+      </div>
+      <div class="d-flex flex-direction-column align-items-center">
+        <div class="kpi-graph__subtitle font-300 font-size-12">D+ {{currentElevationObjective()}} m</div>
+        <app-progress-chart 
+          [value]="currentElevationValue()"
+          [objective]="currentElevationObjective()"
+        ></app-progress-chart>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center gap-20">
+      <app-month-kpi
+        [results]="results()"
+      ></app-month-kpi>
+    </div>
+  </div>
+</div>
