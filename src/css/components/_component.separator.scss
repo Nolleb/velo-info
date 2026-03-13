@@ -2,3 +2,9 @@
   border: 1px solid var(--grey-light-color);
   height: 100%;
 }
+
+.separator-horizontal {
+  width: calc(100% - 40%);
+  margin: 0 auto;
+  border: 1px solid var(--primary-color);
+}

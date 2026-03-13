@@ -1,7 +1,7 @@
 <div class="d-flex flex-direction-column gap-20">
-  @for (row of rowsToDisplay(); track $index) {
+  @for (row of rowsToDisplay(); track $index; let isLast = $last) {
     <ul class="kpi">
-      @for (item of row; track $index; let isLast = $last) {
+      @for (item of row; track $index) {
         <li 
           class="kpi__item"
         >        
@@ -22,5 +22,8 @@
         </li>                      
       }
     </ul>
+    @if (!isLast) {
+      <div class="separator-horizontal"></div>
+    }
   }
 </div>

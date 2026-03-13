@@ -77,7 +77,7 @@ export class ActivityMapDetailComponent implements AfterViewInit, OnDestroy {
     if (!this.map) return;
 
     L.polyline(points, {
-      color: 'red',
+      color: 'redorange',
       weight: 4,
       opacity: 0.3,
     }).addTo(this.map);

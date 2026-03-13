@@ -166,6 +166,29 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
     this.selectedSegmentData.set(data);
     this.sidebarOpen.set(true)
     // L'effect se chargera de créer le chart
+
+  }
+
+  compareTimeEffort(segment: SegmentEffort): string {
+    const timeEffort = segment.moving_time;
+    const bestTimeEffort = segment.overallRanking?.gold;
+    const silverTimeEffort = segment.overallRanking?.silver;
+    const bronzeTimeEffort = segment.overallRanking?.bronze;
+
+    if(!bestTimeEffort || !silverTimeEffort || !bronzeTimeEffort) {
+      return 'none';
+    }
+
+    switch(true){
+      case timeEffort <= bestTimeEffort:
+        return 'gold';
+      case bestTimeEffort < timeEffort && timeEffort <= silverTimeEffort:
+        return 'silver';
+      case silverTimeEffort < timeEffort && timeEffort <= bronzeTimeEffort:
+        return 'bronze';
+      default:
+        return 'none';
+    }
   }
 
   private createTopologyChart(distances: number[], altitudes: number[]) {
