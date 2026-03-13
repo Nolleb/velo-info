@@ -53,10 +53,16 @@ export class ActivityMapComponent implements AfterViewInit, OnDestroy {
     
     this.map = L.map(this.mapId).fitBounds(bounds);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  /*   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      minZoom: 5,
+    }).addTo(this.map); */
+
+     L.tileLayer('https://api.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=09e8c227891943b6b560b5af8576015b', {
       maxZoom: 18,
       minZoom: 5,
     }).addTo(this.map);
+
 
     this.loadMap(polylineValue);
   }
@@ -67,21 +73,19 @@ export class ActivityMapComponent implements AfterViewInit, OnDestroy {
     const points = decode(polyline);
 
     L.polyline(points, {
-      color: 'red',
-      weight: 4,
-      opacity: 0.3,
+      color: 'white',
+      weight: 8,
+      opacity: 0.8
     }).addTo(this.map);
 
     L.polyline(points, {
-      color: 'red',
-      weight: 8,
-      opacity: 0.15,
+      color: '#ff3b00',
+      weight: 4
     }).addTo(this.map);
-
     const route = L.polyline(points, {
-      color: '#E76D46',
-      weight: 2,
-      opacity: 1
+      color: '#ff3b00',
+      weight: 5,
+      opacity: 0.9
     }).addTo(this.map);
 
     this.map.fitBounds(route.getBounds());
