@@ -66,7 +66,7 @@ export class MonthKpiComponent {
     return [
       {
         label: 'Intensité',
-        value: '67%',
+        value: this.results()?.avgIntensity ?? 'N/A',
         icon: {
           name: 'energy',
           width: '100%',
@@ -75,19 +75,19 @@ export class MonthKpiComponent {
         },
       },
       {
-        label: 'Fatigue',
-        value: '90%',
+        label: 'Grand Fondo',
+        value: this.results()?.grandFondo ?? 0,
         icon: {
-          name: 'fatigue',
+          name: 'grandFondo',
           width: '100%',
-          height: '25px',
+          height: '50px',
           color: 'var(--grey-semi-light-color)',
         },
       },
     
       {
         label: 'Régularité',
-        value: '93%',
+        value: (this.results()?.regularity ?? 0) + '%',
         icon: {
           name: 'regularity',
           width: '100%',
@@ -97,7 +97,7 @@ export class MonthKpiComponent {
       },
       {
         label: 'Exploration',
-        value: '23%',
+        value: this.results()?.exploration ?? 'Routine',
         icon: {
           name: 'earth',
           width: '30px',

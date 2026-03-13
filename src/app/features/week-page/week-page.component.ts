@@ -1,4 +1,3 @@
-import { JsonPipe, DatePipe } from "@angular/common";
 import { Component, computed, inject, input, OnInit, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { MONTHS, MONTHS_SLUGS } from "../../shared/utils/variables/months";
@@ -15,7 +14,7 @@ import { MinutesToTimePipe } from "../../shared/pipes/minutes-to-time.pipe";
   selector: "app-week-page",
   templateUrl: "./week-page.component.html",
   styleUrls: ["./week-page.component.scss"],
-  imports: [DatePipe, CycleLoaderComponent, SvgIconDirective, KmPipe, SafeDatePipe, MinutesToTimePipe]
+  imports: [CycleLoaderComponent, SvgIconDirective, KmPipe, SafeDatePipe, MinutesToTimePipe]
 })
 export class WeekPageComponent implements OnInit {
 

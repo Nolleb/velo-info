@@ -15,8 +15,8 @@ export interface YearTotals {
   totalElevation: number;
   totalTime: number;
   activityCount: number;
-  avgIntensity: number;
-  avgFatigue: number;
+  grandFondo: number;
+  yearlyRegularity: number;
 }
 
 export function calculateYearTotals(months: MonthStats[]): YearTotals {
@@ -26,8 +26,8 @@ export function calculateYearTotals(months: MonthStats[]): YearTotals {
       totalElevation: 0,
       totalTime: 0,
       activityCount: 0,
-      avgIntensity: 0,
-      avgFatigue: 0
+      grandFondo: 0,
+      yearlyRegularity: 0
     };
   }
 
@@ -36,16 +36,15 @@ export function calculateYearTotals(months: MonthStats[]): YearTotals {
     totalElevation: acc.totalElevation + month.totalElevation,
     totalTime: acc.totalTime + month.totalTime,
     activityCount: acc.activityCount + month.activityCount,
-    // Somme pondérée pour les moyennes
-    avgIntensitySum: acc.avgIntensitySum + (month.avgIntensity * month.activityCount),
-    avgFatigueSum: acc.avgFatigueSum + (month.avgFatigue * month.activityCount)
+    grandFondo: acc.grandFondo + month.grandFondo,
+    yearlyRegularity: acc.yearlyRegularity + (month.regularity || 0)
   }), {
     totalDistance: 0,
     totalElevation: 0,
     totalTime: 0,
     activityCount: 0,
-    avgIntensitySum: 0,
-    avgFatigueSum: 0
+    grandFondo: 0,
+    yearlyRegularity: 0
   });
 
   return {
@@ -53,9 +52,8 @@ export function calculateYearTotals(months: MonthStats[]): YearTotals {
     totalElevation: totals.totalElevation,
     totalTime: totals.totalTime,
     activityCount: totals.activityCount,
-    // Calculer la vraie moyenne pour l'année
-    avgIntensity: totals.activityCount > 0 ? totals.avgIntensitySum / totals.activityCount : 0,
-    avgFatigue: totals.activityCount > 0 ? totals.avgFatigueSum / totals.activityCount : 0
+    grandFondo: totals.grandFondo,
+    yearlyRegularity: totals.yearlyRegularity
   };
 }
 

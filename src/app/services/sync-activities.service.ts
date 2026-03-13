@@ -352,9 +352,38 @@ export class SyncActivitiesService {
       const detail = await this.stravaService.getActivityDetail(activity.id);
       const map = await this.stravaService.getActivityMap(activity.id);
       // Filtrer UNIQUEMENT les segments favoris
-      const starredSegments = detail.segment_efforts?.filter(
+      let starredSegments = detail.segment_efforts?.filter(
         (effort: any) => effort.segment?.starred === true
       ) || [];
+      
+      console.log(`📊 Activity ${activity.id} - ${activity.name}:`);
+      console.log(`   Total segment_efforts: ${detail.segment_efforts?.length || 0}`);
+      console.log(`   Starred segments: ${starredSegments.length}`);
+      
+      // Vérifier et gérer les doublons (même segment parcouru plusieurs fois)
+      const segmentIds = starredSegments.map((s: any) => s.segment.id);
+      const uniqueSegmentIds = new Set(segmentIds);
+      if (segmentIds.length !== uniqueSegmentIds.size) {
+        console.warn(`⚠️ DUPLICATE SEGMENTS DETECTED in activity ${activity.id}!`);
+        console.warn(`   Total: ${segmentIds.length}, Unique: ${uniqueSegmentIds.size}`);
+        
+        // Garder seulement le meilleur temps (le plus rapide) pour chaque segment
+        const bestEffortsMap = new Map();
+        starredSegments.forEach((effort: any) => {
+          const segmentId = effort.segment.id;
+          const existingEffort = bestEffortsMap.get(segmentId);
+          
+          if (!existingEffort || effort.moving_time < existingEffort.moving_time) {
+            bestEffortsMap.set(segmentId, effort);
+            console.log(`   ✅ Keeping effort with moving_time: ${effort.moving_time}s for segment ${effort.segment.name}`);
+          } else {
+            console.log(`   ❌ Discarding effort with moving_time: ${effort.moving_time}s for segment ${effort.segment.name} (slower)`);
+          }
+        });
+        
+        starredSegments = Array.from(bestEffortsMap.values());
+        console.log(`   Final starred segments after deduplication: ${starredSegments.length}`);
+      }
 
       const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
       const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
@@ -364,9 +393,14 @@ export class SyncActivitiesService {
       const enrichedSegments = [];
       for (const segment of starredSegments) {
         try {
+          console.log(`🔍 Processing segment: ${segment.segment.name} (${segment.segment.id})`);
+          console.log(`   Current effort - moving_time: ${segment.moving_time}s, elapsed_time: ${segment.elapsed_time}s`);
+          
           // Récupérer l'historique des temps sur ce segment depuis Firestore
           const topEfforts = await this.firestoreService.getTopSegmentEfforts(segment.segment.id, 3);
           
+          console.info(`Segment ${segment.segment.name} (${segment.segment.id}): top times`, topEfforts);
+
           // Extraire la topologie du segment
           const startIndex = segment.start_index;
           const endIndex = segment.end_index;

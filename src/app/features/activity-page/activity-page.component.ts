@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, OnInit, OnDestroy, Signal, signal, viewChild, ElementRef, effect } from "@angular/core";
 import { ActivityStore } from "./store/activity.store";
-import { JsonPipe } from "@angular/common";
 import { SafeDatePipe } from "../../shared/pipes/safe-date.pipe";
 import { GlobalResultComponent } from "../../shared/components/global-result/global-result.component";
 import { minutesToTimeString } from "../../shared/utils/time.utils";
@@ -23,7 +22,7 @@ Chart.register(...registerables);
   selector: "app-activity-page",
   templateUrl: "./activity-page.component.html",
   styleUrls: ["./activity-page.component.scss"],
-  imports: [JsonPipe, SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent, SidebarComponent, KmPipe, SvgIconDirective]
+  imports: [SafeDatePipe, GlobalResultComponent, SpeedPipe, MinutesToTimePipe, CycleLoaderComponent, ActivityMapDetailComponent, SidebarComponent, KmPipe, SvgIconDirective]
 })
 
 export class ActivityPageComponent implements OnInit, OnDestroy {
@@ -94,7 +93,7 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
       [
         {
           label: 'Exploration',
-          value: '23%',
+          value: this.activityStore.activity()?.metrics.exploration ?? 'N/A',
           icon: {
             name: 'earth',
             width: '100%',
@@ -104,7 +103,7 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
         },
         {
           label: 'Intensité',
-          value: '67%',
+          value: this.activityStore.activity()?.metrics.intensity ?? 'N/A',
           icon: {
             name: 'energy',
             width: '100%',
@@ -113,12 +112,12 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
           },
         },
         {
-          label: 'Fatigue',
-          value: '90%',
+          label: 'Grand Fondo',
+          value: this.activityStore.activity()?.metrics.grandFondo ?? 0,
           icon: {
-            name: 'fatigue',
+            name: 'grandFondo',
             width: '100%',
-            height: '25px',
+            height: '50px',
             color: 'var(--grey-semi-light-color)',
           },
         },
@@ -162,11 +161,8 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
   }
 
   onSegmentSelected(data: { segment: SegmentEffort; topology: { distances: number[]; altitudes: number[] } }) {
-    console.info('Segment selected:', data);
     this.selectedSegmentData.set(data);
     this.sidebarOpen.set(true)
-    // L'effect se chargera de créer le chart
-
   }
 
   compareTimeEffort(segment: SegmentEffort): string {
@@ -192,7 +188,6 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
   }
 
   private createTopologyChart(distances: number[], altitudes: number[]) {
-    console.info('Creating topology chart with distances:', distances, 'and altitudes:', altitudes);
     const canvas = this.topologyChart()?.nativeElement;
     if (!canvas) return;
     

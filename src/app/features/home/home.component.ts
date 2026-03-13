@@ -5,7 +5,6 @@ import { MONTHS, MONTHS_SLUGS } from "../../shared/utils/variables/months";
 import { GlobalResultComponent } from "../../shared/components/global-result/global-result.component";
 import { ResultCriterion } from "../../models/result-criterion.model";
 import { HomeStore } from "./store/home.store";
-import { JsonPipe } from "@angular/common";
 import { minutesToTimeString } from "../../shared/utils/time.utils";
 import { WeekStore } from "../week-page/store/week.store";
 import { SafeDatePipe } from "../../shared/pipes/safe-date.pipe";
@@ -17,7 +16,7 @@ import { MonthResultComponent } from "../../shared/components/month-result/month
   selector: "app-home",
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.scss"],
-  imports: [GlobalResultComponent, JsonPipe, SafeDatePipe, CycleLoaderComponent, ActivityMapComponent, MonthResultComponent]
+  imports: [GlobalResultComponent, SafeDatePipe, CycleLoaderComponent, ActivityMapComponent, MonthResultComponent]
 })
 export class HomeComponent {
 
@@ -26,7 +25,7 @@ export class HomeComponent {
   readonly weekStore = inject(WeekStore);
   today = new Date();
 
-  months = MONTHS
+  months = MONTHS;
   currentYear = this.today.getFullYear().toString();
   currentMonth = this.today.getMonth();
 

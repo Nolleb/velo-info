@@ -54,6 +54,7 @@ export interface SegmentEffort {
   achievements: any[]
   start_date: string
   distance: number,
+  athlete_count?: number,
   overallRanking?: {
     gold: number | null;
     silver: number | null;
@@ -122,9 +123,9 @@ export interface WeekActivity {
 }
 
 export interface ActivityMetrics {
-  intensity: number;
-  fatigue: number;
-  exploration: number;
+  intensity: string;
+  grandFondo: number;
+  exploration: string;
   regularity: number;
 }
 
@@ -149,8 +150,10 @@ export interface MonthStats {
   totalElevation: number;
   totalTime: number;
   activityCount: number;
-  avgIntensity: number;
-  avgFatigue: number;
+  avgIntensity: string;
+  grandFondo: number;
+  regularity: number;
+  exploration: string;
   userId: string;
 }
 
