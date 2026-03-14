@@ -5,7 +5,7 @@ import { getRoutePath } from "../../app.routes";
 import { CardInfosComponent } from "../../shared/components/card-infos/card-infos.component";
 import { MonthStore } from "./store/month.store";
 import { GlobalResultComponent } from "../../shared/components/global-result/global-result.component";
-import { ResultCriterion, ResultCriterionBlock } from "../../models/result-criterion.model";
+import { ResultCriterion } from "../../models/result-criterion.model";
 import { minutesToTimeString } from "../../shared/utils/time.utils";
 import { WeekStore } from "../week-page/store/week.store";
 import { CycleLoaderComponent } from "../../shared/components/cycle-loader/cycle-loader.component";
@@ -109,6 +109,16 @@ export class MonthPageComponent implements OnInit {
     }
 
     return monthStats
+  }
+
+  getMonthCounts(monthIndex: number): number {
+    const monthStats = this.monthStore.yearActivities().find(m => m.month === monthIndex + 1);
+    
+    if (!monthStats) {
+      return 0;
+    }
+
+    return monthStats.activityCount;
   }
 
   ngOnInit(): void {

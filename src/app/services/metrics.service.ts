@@ -32,8 +32,9 @@ export class MetricsService {
     const points = segments
       .filter(segment => segment.distance > 500 && segment.elapsed_time > 60)
       .map(s => {
-        const count = s.athlete_count || 0;
+        const count = s.achievements[0]?.effort_count || 0;
 
+        console.info(`Segment ${s.name} - Athlete count: ${count}`);
         if (count === 1) return 10;
         if (count === 2) return 8;
         if (count === 3) return 6;

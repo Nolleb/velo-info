@@ -1,7 +1,5 @@
 import { Component, computed, input } from "@angular/core";
-import { GlobalResultComponent } from "../global-result/global-result.component";
 import { MonthStats } from "../../../models/strava.model";
-import { JsonPipe } from "@angular/common";
 import { ProgressChartComponent } from "../progress-chart/progress-chart.component";
 import { MonthKpiComponent } from "../month-kpi/month-kpi.component";
 
@@ -22,119 +20,91 @@ export class MonthResultComponent {
   currentDistanceObjective = computed(() => this.monthObjectives[this.currentMonth()! - 1][0].kms)
   currentElevationObjective = computed(() => this.monthObjectives[this.currentMonth()! - 1][0].elevation)
 
+  currentMonthName = computed(() => this.monthObjectives[this.currentMonth()! - 1][0].name)
+
   monthObjectives = [
     [
       {
         kms: 400,
+        name: 'Janvier',
         elevation: 3000,
       },
     ],
     [
       {
         kms: 400,
+        name: 'Février',
         elevation: 3000,
       },
     ],
     [
       {
         kms: 600,
+        name: 'Mars',
         elevation: 5000,
       },
     ],
     [
       {
         kms: 600,
+        name: 'Avril',
         elevation: 5000,
       },
     ],
     [
       {
         kms: 600,
+        name: 'Mai',
         elevation: 5000,
       },
     ],
     [
       {
         kms: 600,
+        name: 'Juin',
         elevation: 6000,
       },
     ],
     [
       {
         kms: 800,
+        name: 'Juillet',
         elevation: 8000,
       },
     ],
     [
       {
         kms: 800,
+        name: 'Août',
         elevation: 8000,
       },
     ],
     [
       {
         kms: 800,
+        name: 'Septembre',
         elevation: 8000,
       },
     ],
     [
       {
         kms: 800,
+        name: 'Octobre',
         elevation: 8000,
       },
     ],
     [
       {
         kms: 800,
+        name: 'Novembre',
         elevation: 8000,
       },
     ],
     [
       {
         kms: 600,
+        name: 'Décembre',
         elevation: 5000,
-      },
-    ],
-    [
-      {
-        kms: 300,
-        elevation: 300,
-      },
-    ],
-    [
-      {
-        kms: 300,
-        elevation: 200,
-      },
-    ],
-    [
-      {
-        kms: 800,
-        elevation: 8000,
-      },
-    ],
-    [
-      {
-        kms: 800,
-        elevation: 8000,
-      },
-    ],
-    [
-      {
-        kms: 600,
-        elevation: 5000,
-      },
-    ],
-    [
-      {
-        kms: 300,
-        elevation: 300,
-      },
-    ],
-    [
-      {
-        kms: 300,
-        elevation: 200,
       },
     ]
   ]

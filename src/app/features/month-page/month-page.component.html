@@ -22,15 +22,17 @@
     <app-cycle-loader></app-cycle-loader>
   } @else {
     @for(month of availableMonths(); track month) {
-      <app-card-infos
-        (click)="onOpenWeekPage(year()!, month)"
-        [year]="year()"
-        [month]="month"
-      >
-        <app-month-result
-          [results]="getMonthStats(month)"
-        ></app-month-result>
-      </app-card-infos>
+      @if(getMonthCounts(month) > 0) {
+        <app-card-infos
+          (click)="onOpenWeekPage(year()!, month)"
+          [year]="year()"
+          [month]="month"
+        >
+          <app-month-result
+            [results]="getMonthStats(month)"
+          ></app-month-result>
+        </app-card-infos>
+      }
     } 
   }
 </div>
