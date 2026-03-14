@@ -88,23 +88,23 @@ export class MonthResultComponent {
     ],
     [
       {
-        kms: 800,
-        name: 'Octobre',
-        elevation: 8000,
-      },
-    ],
-    [
-      {
-        kms: 800,
-        name: 'Novembre',
-        elevation: 8000,
-      },
-    ],
-    [
-      {
         kms: 600,
-        name: 'Décembre',
+        name: 'Octobre',
         elevation: 5000,
+      },
+    ],
+    [
+      {
+        kms: 400,
+        name: 'Novembre',
+        elevation: 4000,
+      },
+    ],
+    [
+      {
+        kms: 300,
+        name: 'Décembre',
+        elevation: 3000,
       },
     ]
   ]
