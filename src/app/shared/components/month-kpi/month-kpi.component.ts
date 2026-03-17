@@ -46,18 +46,7 @@ export class MonthKpiComponent {
           height: '30px',
           color: 'var(--grey-semi-light-color)',
         },
-      },
-    
-      {
-        label: 'Activités',
-        value: this.results()?.activityCount || 0,
-        icon: {
-          name: 'cycling',
-          width: '100%',
-          height: '30px',
-          color: 'var(--grey-semi-light-color)',
-        },
-      }           
+      }        
     ]
   })
 
@@ -84,7 +73,6 @@ export class MonthKpiComponent {
           color: 'var(--grey-semi-light-color)',
         },
       },
-    
       {
         label: 'Régularité',
         value: (this.results()?.regularity ?? 0) + '%',
@@ -96,15 +84,15 @@ export class MonthKpiComponent {
         },
       },
       {
-        label: 'Exploration',
-        value: this.results()?.exploration ?? 'Routine',
+        label: 'Activités',
+        value: this.results()?.activityCount || 0,
         icon: {
-          name: 'earth',
-          width: '30px',
+          name: 'cycling',
+          width: '100%',
           height: '30px',
           color: 'var(--grey-semi-light-color)',
         },
-      },           
+      }           
     ]
   })
 

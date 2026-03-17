@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from '@angular/fire/firestore';
-import { GlobalStats, MonthStats, StoredActivity } from '../models/strava.model';
+import { Firestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, updateDoc } from '@angular/fire/firestore';
+import { GlobalStats, MonthStats, StoredActivity, SegmentStat, SegmentDateStat } from '../models/strava.model';
 import { MetricsService } from './metrics.service';
 
 @Injectable({
@@ -39,51 +39,139 @@ export class FirestoreService {
     return snapshot.docs.map(doc => doc.data() as StoredActivity);
   }
 
-  // Récupérer les N meilleurs temps sur un segment
-  async getTopSegmentEfforts(segmentId: number, limit: number = 3): Promise<any[]> {
-    const activitiesRef = collection(this.firestore, `users/${this.userId}/activities`);
-    const snapshot = await getDocs(activitiesRef);
+  // ==================== GESTION DES SEGMENTS ====================
+  
+  /**
+   * Récupère les stats d'un segment
+   * @param segmentId ID du segment
+   * @returns Les stats du segment ou null
+   */
+  async getSegmentStat(segmentId: number): Promise<SegmentStat | null> {
+    const segmentRef = doc(this.firestore, `users/${this.userId}/segmentsStats/${segmentId}`);
+    const snapshot = await getDoc(segmentRef);
+    return snapshot.exists() ? snapshot.data() as SegmentStat : null;
+  }
+
+  /**
+   * Enregistre ou met à jour un passage sur un segment
+   * @param segmentId ID du segment
+   * @param segmentName Nom du segment
+   * @param activityDate Date de l'activité (format ISO)
+   * @param isStarred Si le segment est favori
+   * @param movingTime Temps en mouvement (en secondes, uniquement pour starred)
+   */
+  async saveSegmentStat(
+    segmentId: number,
+    segmentName: string,
+    activityDate: string,
+    isStarred: boolean,
+    movingTime?: number
+  ): Promise<void> {
+    const segmentRef = doc(this.firestore, `users/${this.userId}/segmentsStats/${segmentId}`);
+    const dateKey = activityDate.split('T')[0]; // Format: YYYY-MM-DD
     
-    const allEfforts: any[] = [];
+    // Récupérer les stats existantes
+    const existingStat = await this.getSegmentStat(segmentId);
     
-    // Parcourir toutes les activités pour trouver les efforts sur ce segment
-    snapshot.docs.forEach(doc => {
-      const activity = doc.data() as StoredActivity;
-      if (activity.segment_efforts) {
-        activity.segment_efforts.forEach(effort => {
-          // Conversion pour gérer les IDs trop grands ou les types différents
-          const effortId = typeof effort.segment.id === 'string' 
-            ? Number(effort.segment.id) 
-            : effort.segment.id;
-          const searchId = typeof segmentId === 'string' 
-            ? Number(segmentId) 
-            : segmentId;
-            
-          // Utiliser == pour permettre la comparaison number/string
-          if (effortId == searchId) {
-            allEfforts.push({
-              moving_time: effort.moving_time,
-              elapsed_time: effort.elapsed_time,
-              start_date: effort.start_date,
-              activity_id: activity.id,
-              segment_name: effort.segment.name
-            });
-          }
-        });
+    if (!existingStat) {
+      // Créer un nouveau segment
+      const dateData: SegmentDateStat = { count: 1 };
+      if (isStarred && movingTime) {
+        dateData.times = [movingTime];
       }
-    });
+      
+      const newStat: SegmentStat = {
+        name: segmentName,
+        starred: isStarred,
+        dates: {
+          [dateKey]: dateData
+        }
+      };
+      
+      if (isStarred && movingTime) {
+        newStat.bestTimes = [movingTime];
+      }
+      
+      await setDoc(segmentRef, newStat);
+      console.log(`✅ Nouveau segment créé: ${segmentName} (${segmentId}) - ${dateKey}`);
+    } else {
+      // Mettre à jour les stats existantes
+      const updatedDates = { ...existingStat.dates };
+      
+      if (updatedDates[dateKey]) {
+        // Date existe déjà : incrémenter le count et ajouter le time
+        const dateData: SegmentDateStat = {
+          count: updatedDates[dateKey].count + 1
+        };
+        
+        if (movingTime) {
+          const existingTimes = updatedDates[dateKey].times || [];
+          dateData.times = [...existingTimes, movingTime];
+        } else if (updatedDates[dateKey].times) {
+          dateData.times = updatedDates[dateKey].times;
+        }
+        
+        updatedDates[dateKey] = dateData;
+      } else {
+        // Nouvelle date
+        const dateData: SegmentDateStat = { count: 1 };
+        if (movingTime) {
+          dateData.times = [movingTime];
+        }
+        updatedDates[dateKey] = dateData;
+      }
+      
+      // Mettre à jour les meilleurs temps
+      const updateData: any = {
+        dates: updatedDates,
+        starred: isStarred
+      };
+      
+      if (movingTime) {
+        const updatedBestTimes = [...(existingStat.bestTimes || []), movingTime]
+          .sort((a, b) => a - b) // Trier par temps croissant
+          .slice(0, 3); // Garder les 3 meilleurs
+        updateData.bestTimes = updatedBestTimes;
+      } else if (existingStat.bestTimes) {
+        updateData.bestTimes = existingStat.bestTimes;
+      }
+      
+      await updateDoc(segmentRef, updateData);
+    }
+  }
+
+  /**
+   * Récupère les N meilleurs temps sur un segment starred avant une date donnée
+   * @param segmentId ID du segment
+   * @param limit Nombre de temps à récupérer
+   * @param beforeDate Date limite (ISO format), optionnelle
+   * @returns Les meilleurs temps triés
+   */
+  async getSegmentBestTimes(segmentId: number, limit: number = 3, beforeDate?: string): Promise<number[]> {
+    const segmentStat = await this.getSegmentStat(segmentId);
     
-    // Debug : afficher tous les temps trouvés
-    console.log(`🔍 Segment ${segmentId}:`, {
-      total_efforts: allEfforts.length,
-      moving_times: allEfforts.map(e => `${e.moving_time}s (${Math.floor(e.moving_time / 60)}:${String(e.moving_time % 60).padStart(2, '0')})`),
-      activities: allEfforts.map(e => e.activity_id)
-    });
+    if (!segmentStat || !segmentStat.starred) {
+      return [];
+    }
     
-    // Trier par moving_time (temps en mouvement) et prendre les N meilleurs
-    return allEfforts
-      .sort((a, b) => a.moving_time - b.moving_time)
-      .slice(0, limit);
+    // Si pas de filtre de date, retourner bestTimes directement
+    if (!beforeDate) {
+      return (segmentStat.bestTimes || []).slice(0, limit);
+    }
+    
+    // Avec filtre de date : parcourir les dates et collecter les times
+    const cutoffDate = beforeDate.split('T')[0];
+    const allTimes: number[] = [];
+    
+    for (const [dateKey, dateStat] of Object.entries(segmentStat.dates)) {
+      // Ne prendre que les dates antérieures ou égales
+      if (dateKey <= cutoffDate && dateStat.times) {
+        allTimes.push(...dateStat.times);
+      }
+    }
+    
+    // Trier par temps croissant et prendre les N meilleurs
+    return allTimes.sort((a, b) => a - b).slice(0, limit);
   }
 
   // Stats globales
@@ -199,7 +287,6 @@ export class FirestoreService {
         avgIntensity: 'Aucune activité',
         grandFondo: 0,
         regularity: 0,
-        exploration: 'Routine',
         userId: this.userId
       });
       return;
@@ -226,10 +313,6 @@ export class FirestoreService {
     // Calculer l'intensité moyenne (score médian) puis convertir en profile
     const intensityScore = this.metricsService.calculateMonthlyIntensityScore(activities);
     const avgIntensity = this.metricsService.getIntensityProfile(intensityScore);
-    
-    // Calculer l'exploration moyenne (score médian) puis convertir en profile
-    const explorationScore = this.metricsService.calculateMonthlyExplorationScore(activities);
-    const exploration = this.metricsService.getExplorationProfile(explorationScore);
 
     const stats: MonthStats = {
       year,
@@ -241,7 +324,6 @@ export class FirestoreService {
       avgIntensity,
       grandFondo,
       regularity,
-      exploration,
       userId: this.userId
     };
 
@@ -251,7 +333,6 @@ export class FirestoreService {
       elevation: totalElevation + ' m',
       regularity: regularity + '/100',
       avgIntensity,
-      exploration,
       grandFondo
     });
 
@@ -283,6 +364,12 @@ export class FirestoreService {
     const monthsSnapshot = await getDocs(monthsRef);
     const deleteMonthsPromises = monthsSnapshot.docs.map(doc => deleteDoc(doc.ref));
     await Promise.all(deleteMonthsPromises);
+
+    // Supprimer toutes les stats de segments
+    const segmentsRef = collection(this.firestore, `users/${this.userId}/segmentsStats`);
+    const segmentsSnapshot = await getDocs(segmentsRef);
+    const deleteSegmentsPromises = segmentsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deleteSegmentsPromises);
 
     // Réinitialiser les stats globales
     await this.setGlobalStats({

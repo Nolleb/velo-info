@@ -103,7 +103,7 @@ export class MonthPageComponent implements OnInit {
 
   getMonthStats(monthIndex: number) {
     const monthStats = this.monthStore.yearActivities().find(m => m.month === monthIndex + 1);
-    
+    console.info('monthStats', monthStats);
     if (!monthStats) {
       return null;
     }

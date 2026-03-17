@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SegmentEffort, StravaActivity, StravaMap } from '../models/strava.model';
+import { StravaActivity, StravaMap } from '../models/strava.model';
 import { environment } from '../../environments/environments';
 
 @Injectable({

@@ -92,16 +92,6 @@ export class ActivityPageComponent implements OnInit, OnDestroy {
       ],
       [
         {
-          label: 'Exploration',
-          value: this.activityStore.activity()?.metrics.exploration ?? 'N/A',
-          icon: {
-            name: 'earth',
-            width: '100%',
-            height: '30px',
-            color: 'var(--grey-semi-light-color)',
-          },
-        },
-        {
           label: 'Intensité',
           value: this.activityStore.activity()?.metrics.intensity ?? 'N/A',
           icon: {

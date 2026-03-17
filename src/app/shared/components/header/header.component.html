@@ -1,15 +1,19 @@
 <div class="container grid">
   <div class="grid__sync">
-    <button class="btn--icon-only" (click)="onSyncPage()">
-      <span
-        appSvgIcon
-        [height]="'20px'"
-        [width]="'20px'"
-        [iconName]="'refresh'"
-        class="d-flex"
-        [color]="'var(--secondary-color)'"
-      ></span>
-    </button>
+    <app-auth-button></app-auth-button>
+    @if (authStore.isAuthenticated()) {
+      <button class="btn--icon-only btn--admin ml-5" (click)="onSyncPage()">
+        <span
+          appSvgIcon
+          [height]="'16px'"
+          [width]="'16px'"
+          [iconName]="'refresh'"
+          class="d-flex"
+          [color]="'var(--secondary-color)'"
+        ></span>
+      </button>
+    }
+
   </div>
   <div class="media grid__media">
     <div class="logo" (click)="onGoHomePage()">

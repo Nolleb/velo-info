@@ -1,0 +1,34 @@
+@if (authStore.isAuthenticated()) {
+  <div class="d-flex gap-5 align-items-center">
+    <button 
+      class="button button--logout btn--admin btn--icon-only"
+      (click)="signOut()">
+      <span
+        [color]="'var(--secondary-color)'"
+        [height]="'14px'"
+        [iconName]="'close'"
+        [width]="'14px'"
+        class="d-flex"
+        appSvgIcon
+      ></span>
+    </button>
+
+    @if (authStore.getUserPhotoURL()) {
+      <img class="profile-img" [src]="authStore.getUserPhotoURL()!" alt="Profile" />
+    }
+    
+  </div>
+} @else {
+  <button 
+    class="button button--action button--sub-header"
+    (click)="signInWithGoogle()">
+    <span
+      [color]="'#151515'"
+      [height]="'18px'"
+      [iconName]="'user'"
+      [width]="'18px'"
+      class="d-flex"
+      appSvgIcon
+    ></span>
+  </button>
+}

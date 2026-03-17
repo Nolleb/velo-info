@@ -125,7 +125,6 @@ export interface WeekActivity {
 export interface ActivityMetrics {
   intensity: string;
   grandFondo: number;
-  exploration: string;
   regularity: number;
 }
 
@@ -153,7 +152,6 @@ export interface MonthStats {
   avgIntensity: string;
   grandFondo: number;
   regularity: number;
-  exploration: string;
   userId: string;
 }
 
@@ -165,4 +163,17 @@ export interface GlobalStats {
   lastActivityDate: string | null;
   lastSyncDate: string;
   userId: string;
+}
+
+// Structure pour les statistiques de segments dans Firebase
+export interface SegmentDateStat {
+  count: number; // Nombre de passages à cette date
+  times?: number[];  // Temps réalisés à cette date (seulement si starred)
+}
+
+export interface SegmentStat {
+  name: string;
+  starred: boolean;
+  dates: { [date: string]: SegmentDateStat }; // Format date: "YYYY-MM-DD"
+  bestTimes?: number[]; // Les 3 meilleurs temps globaux, triés (seulement si starred)
 }

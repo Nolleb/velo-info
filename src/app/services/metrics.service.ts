@@ -1,72 +1,30 @@
 import { Injectable } from '@angular/core';
 import { ActivityMetrics, SegmentEffort, StravaActivity } from '../models/strava.model';
+import type { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MetricsService {
+
+  /**
+   * Calcule les métriques d'une activité
+   * @param activity L'activité Strava
+   */
   calculateMetrics(activity: StravaActivity): ActivityMetrics {
 
     const intensity = this.calculateRideIntensity(activity).profile;
     
     // Grand Fondo = 1 si la sortie fait plus de 100km, 0 sinon
     const grandFondo = (activity.distance / 1000) >= 100 ? 1 : 0;
- 
-    // Calcul de l'exploration basé sur les segments parcourus
-    const segments = activity.segment_efforts || [];
-    const exploration = this.calculateExplorationScore(segments);
     
     const regularity = 0;
 
     return {
       intensity,
       grandFondo,
-      exploration,
       regularity
     };
-  }
-
-  calculateExplorationScore(segments: SegmentEffort[]): string {
-    // Strava utilise des mètres pour la distance et des secondes pour elapsed_time
-    // Filtrer les segments significatifs : distance > 500m ET elapsed_time > 60s
-    const points = segments
-      .filter(segment => segment.distance > 500 && segment.elapsed_time > 60)
-      .map(s => {
-        const count = s.achievements[0]?.effort_count || 0;
-
-        console.info(`Segment ${s.name} - Athlete count: ${count}`);
-        if (count === 1) return 10;
-        if (count === 2) return 8;
-        if (count === 3) return 6;
-        if (count === 4) return 4;
-        if (count === 5) return 2;
-
-        return 0;
-      });
-
-    // Si aucun point, score = 0, sinon on fait la somme
-    const score = points.length > 0 ? Math.min(100, points.reduce((a, b) => a + b, 0 as number)) : 0;
-
-    return this.getExplorationProfile(score);
-  }
-
-  // Calculer le score brut d'exploration (utilisé pour la médiane mensuelle)
-  calculateExplorationScoreRaw(segments: SegmentEffort[]): number {
-    const points = segments
-      .filter(segment => segment.distance > 500 && segment.elapsed_time > 60)
-      .map(s => {
-        const count = s.athlete_count || 0;
-
-        if (count === 1) return 10;
-        if (count === 2) return 8;
-        if (count === 3) return 6;
-        if (count === 4) return 4;
-        if (count === 5) return 2;
-
-        return 0;
-      });
-
-    return points.length > 0 ? Math.min(100, points.reduce((a, b) => a + b, 0 as number)) : 0;
   }
 
   calculateRideIntensity(activity: StravaActivity): {
@@ -93,8 +51,8 @@ export class MetricsService {
     const intensity = effort / duration;
 
     // Plage plus large pour éviter les scores trop élevés
-    const minIntensity = 18;  // Plus bas pour couvrir les sorties très cool
-    const maxIntensity = 35;  // Plus haut pour réserver 100% aux vrais compétiteurs
+    const minIntensity = 16;  // Plus bas pour couvrir les sorties très cool
+    const maxIntensity = 40;  // Plus haut pour réserver 100% aux vrais compétiteurs
 
     const rawScore =
       ((intensity - minIntensity) /
@@ -105,10 +63,10 @@ export class MetricsService {
     let profile = '';
 
     // Seuils ajustés
-    if (score < 25) profile = 'Sortie cool';
+    if (score < 25) profile = 'Relax';
     else if (score < 45) profile = 'Endurance';
     else if (score < 65) profile = 'Sportif';
-    else if (score < 85) profile = 'Intense';
+    else if (score < 90) profile = 'Intense';
     else profile = 'Compétition';
 
     return {
@@ -123,25 +81,6 @@ export class MetricsService {
     const scores = activities
       .map(a => this.calculateRideIntensity(a).score)
       .filter(score => score > 0);
-
-    if (!scores.length) return 0;
-
-    scores.sort((a, b) => a - b);
-
-    const middle = Math.floor(scores.length / 2);
-
-    if (scores.length % 2 === 0) {
-      return Math.round((scores[middle - 1] + scores[middle]) / 2);
-    }
-
-    return scores[middle];
-  }
-
-  // Calculer le score médian d'exploration pour un mois
-  calculateMonthlyExplorationScore(activities: StravaActivity[]): number {
-    const scores = activities
-      .map(a => this.calculateExplorationScoreRaw(a.segment_efforts || []))
-      .filter(score => score >= 0); // On garde même les 0
 
     if (!scores.length) return 0;
 
@@ -200,8 +139,7 @@ export class MetricsService {
     const targetKmPerWeek = 120;  // Plus exigeant
     const weeklyRatios = weeklyKm.map(km => Math.min(1, km / targetKmPerWeek));
 
-    const distanceConsistency =
-      weeklyRatios.reduce((a, b) => a + b, 0) / weeklyRatios.length;
+    const distanceConsistency = weeklyRatios.reduce((a, b) => a + b, 0) / weeklyRatios.length;
 
     const distanceScore = distanceConsistency * 35;  // Réduit de 40 à 35
 
@@ -211,9 +149,9 @@ export class MetricsService {
 
     let frequencyBonus = 0;
 
-    if (avgRidesPerWeek >= 4) frequencyBonus = 8;  // 4 sorties/semaine = 8 points
-    else if (avgRidesPerWeek >= 3) frequencyBonus = 5;
-    else if (avgRidesPerWeek >= 2) frequencyBonus = 2;  // Réduit de 3 à 2
+    if (avgRidesPerWeek >= 4) frequencyBonus = 4;  // 4 sorties/semaine = 8 points
+    else if (avgRidesPerWeek >= 3) frequencyBonus = 2;
+    else if (avgRidesPerWeek >= 2) frequencyBonus = 1;  // Réduit de 3 à 2
 
     // 4️⃣ Longest streak
     const sortedWeeks = Array.from(weeks.keys()).sort();
@@ -237,9 +175,9 @@ export class MetricsService {
     let streakBonus = 0;
 
     // Streak bonus plus difficile et graduel
-    if (longestStreak >= 8) streakBonus = 12;       // 8 semaines = 12 points
-    else if (longestStreak >= 6) streakBonus = 8;   // 6 semaines = 8 points  
-    else if (longestStreak >= 4) streakBonus = 4;   // 4 semaines = 4 points
+    if (longestStreak >= 8) streakBonus = 8;       // 8 semaines = 8 points
+    else if (longestStreak >= 6) streakBonus = 4;   // 6 semaines = 4 points  
+    else if (longestStreak >= 4) streakBonus = 2;   // 4 semaines = 2 points
 
     const score =
       presenceScore +
@@ -256,20 +194,11 @@ export class MetricsService {
 
   // Convertir un score d'intensité en profil (aligné avec calculateRideIntensity)
   getIntensityProfile(score: number): string {
-    if (score < 25) return 'Sortie cool';
+    if (score < 25) return 'Relax';
     if (score < 45) return 'Endurance';
     if (score < 65) return 'Sportif';
-    if (score < 85) return 'Intense';
+    if (score < 90) return 'Intense';
     return 'Compétition';
-  }
-
-  // Convertir un score d'exploration en profil
-  getExplorationProfile(score: number): string {
-    if (score === 0) return 'Routine';
-    if (score < 20) return 'Parcours familier';
-    if (score < 40) return 'Petite exploration';
-    if (score < 80) return 'Explorateur';
-    return 'Aventurier';
   }
 
   getWeekNumber(date: Date): number {

@@ -341,31 +341,45 @@ export class SyncActivitiesService {
   private async processActivity(activity: any): Promise<void> {
     console.log(`📊 Processing activity ${activity.id} (${activity.name})`);
     
-    const metrics = this.metricsService.calculateMetrics(activity);
     const date = new Date(activity.start_date);
     const year = date.getFullYear();
     const month = `${year}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    const activityDate = activity.start_date;
 
     // Récupérer les détails complets (polyline + segments)
     let detailedData: any = {};
+    
     try {
       const detail = await this.stravaService.getActivityDetail(activity.id);
       const map = await this.stravaService.getActivityMap(activity.id);
-      // Filtrer UNIQUEMENT les segments favoris
-      let starredSegments = detail.segment_efforts?.filter(
-        (effort: any) => effort.segment?.starred === true
-      ) || [];
+      const allSegmentEfforts = detail.segment_efforts || [];
       
       console.log(`📊 Activity ${activity.id} - ${activity.name}:`);
-      console.log(`   Total segment_efforts: ${detail.segment_efforts?.length || 0}`);
-      console.log(`   Starred segments: ${starredSegments.length}`);
+      console.log(`   Total segment_efforts: ${allSegmentEfforts.length}`);
+
+      // ==================== Enregistrer uniquement les segments STARRED ====================
+      let starredSegments = allSegmentEfforts.filter((effort: any) => effort.segment?.starred === true);
       
-      // Vérifier et gérer les doublons (même segment parcouru plusieurs fois)
+      console.log(`⭐ Starred segments to save: ${starredSegments.length}`);
+      
+      for (const effort of starredSegments) {
+        await this.firestoreService.saveSegmentStat(
+          effort.segment.id,
+          effort.segment.name,
+          activityDate,
+          true,
+          effort.moving_time
+        );
+      }
+
+      // ==================== Enrichir les segments STARRED pour l'affichage ====================
+      
+      // Gérer les doublons (même segment parcouru plusieurs fois dans la même activité)
       const segmentIds = starredSegments.map((s: any) => s.segment.id);
       const uniqueSegmentIds = new Set(segmentIds);
       if (segmentIds.length !== uniqueSegmentIds.size) {
         console.warn(`⚠️ DUPLICATE SEGMENTS DETECTED in activity ${activity.id}!`);
-        console.warn(`   Total: ${segmentIds.length}, Unique: ${uniqueSegmentIds.size}`);
+        console.warn(`Total: ${segmentIds.length}, Unique: ${uniqueSegmentIds.size}`);
         
         // Garder seulement le meilleur temps (le plus rapide) pour chaque segment
         const bestEffortsMap = new Map();
@@ -375,31 +389,25 @@ export class SyncActivitiesService {
           
           if (!existingEffort || effort.moving_time < existingEffort.moving_time) {
             bestEffortsMap.set(segmentId, effort);
-            console.log(`   ✅ Keeping effort with moving_time: ${effort.moving_time}s for segment ${effort.segment.name}`);
-          } else {
-            console.log(`   ❌ Discarding effort with moving_time: ${effort.moving_time}s for segment ${effort.segment.name} (slower)`);
           }
         });
         
         starredSegments = Array.from(bestEffortsMap.values());
-        console.log(`   Final starred segments after deduplication: ${starredSegments.length}`);
+        console.log(`Final starred segments after deduplication: ${starredSegments.length}`);
       }
 
       const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
       const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
       const distanceData = map.find(s => s.type === 'distance')?.data ?? [];
 
-      // Enrichir chaque segment avec les 3 meilleurs temps ET la topologie
+      // Enrichir chaque segment starred avec les 3 meilleurs temps ET la topologie
       const enrichedSegments = [];
       for (const segment of starredSegments) {
         try {
-          console.log(`🔍 Processing segment: ${segment.segment.name} (${segment.segment.id})`);
-          console.log(`   Current effort - moving_time: ${segment.moving_time}s, elapsed_time: ${segment.elapsed_time}s`);
+          // Récupérer les 3 meilleurs temps depuis segmentsStats
+          const bestTimes = await this.firestoreService.getSegmentBestTimes(segment.segment.id, 3, activityDate);
           
-          // Récupérer l'historique des temps sur ce segment depuis Firestore
-          const topEfforts = await this.firestoreService.getTopSegmentEfforts(segment.segment.id, 3);
-          
-          console.info(`Segment ${segment.segment.name} (${segment.segment.id}): top times`, topEfforts);
+          console.log(`🏆 Segment ${segment.segment.name}: best times =`, bestTimes);
 
           // Extraire la topologie du segment
           const startIndex = segment.start_index;
@@ -410,9 +418,9 @@ export class SyncActivitiesService {
           enrichedSegments.push({
             ...segment,
             overallRanking: {
-              gold: topEfforts[0]?.moving_time ?? null,
-              silver: topEfforts[1]?.moving_time ?? null,
-              bronze: topEfforts[2]?.moving_time ?? null
+              gold: bestTimes[0] ?? null,
+              silver: bestTimes[1] ?? null,
+              bronze: bestTimes[2] ?? null
             },
             topology: {
               altitudes: segmentAltitudes,
@@ -434,12 +442,15 @@ export class SyncActivitiesService {
         segment_efforts: enrichedSegments
       };
       
-      console.log(`✓ Activity ${activity.id}: ${enrichedSegments.length} starred segments`);
+      console.log(`✓ Activity ${activity.id}: ${enrichedSegments.length} starred segments enriched`);
     
     } catch (error: any) {
       // En cas d'erreur (rate limit, etc), on sauvegarde quand même l'activité
       console.warn(`⚠ Activity ${activity.id} without details:`, error.message);
     }
+    
+    // Calculer les métriques
+    const metrics = this.metricsService.calculateMetrics(activity);
     
     const storedActivity: StoredActivity = {
       ...activity,
