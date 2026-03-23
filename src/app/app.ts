@@ -1,9 +1,10 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SvgIconDirective } from "./shared/ui/svg/svg-icon.directive";
 import { HeaderComponent } from "./shared/components/header/header.component";
 import { FooterComponent } from "./shared/components/footer/footer.component";
 import { AuthStore } from './stores/auth/auth.store';
+import { AuthService } from './services/auth.service';
 import { SyncActivitiesService } from './services/sync-activities.service';
 
 @Component({
@@ -12,13 +13,13 @@ import { SyncActivitiesService } from './services/sync-activities.service';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('velo-info');
 
   private authStore = inject(AuthStore);
+  private authService = inject(AuthService);
   private syncService = inject(SyncActivitiesService);
 
-  // Prevents triggering sync more than once per app session
   private hasSynced = false;
 
   constructor() {
@@ -31,6 +32,11 @@ export class App {
         this.hasSynced = false;
       }
     });
+  }
+
+  ngOnInit(): void {
+    // Resolve the pending redirect login on iOS (no-op on other browsers).
+    this.authService.handleRedirectResult().subscribe();
   }
 
   private async autoSyncOnLogin(): Promise<void> {

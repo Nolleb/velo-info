@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user, User } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, user, User } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { from, Observable, switchMap, map, of } from 'rxjs';
 import { AuthUserWithRole, Role } from '../models/user.model';
@@ -35,29 +35,49 @@ export class AuthService {
 
   signInWithGoogle(): Observable<any> {
     const provider = new GoogleAuthProvider();
+    // iOS Safari blocks async-opened popups (WebKit policy).
+    // Use redirect flow on iOS; popup on every other browser.
+    if (this.isIos()) {
+      return from(signInWithRedirect(this.auth, provider));
+    }
     return from(signInWithPopup(this.auth, provider)).pipe(
-      switchMap(result => {
-        const user = result.user;
-        const userRef = doc(this.firestore, `users/${user.uid}`);
+      switchMap(result => this.upsertUser(result))
+    );
+  }
 
-        return from(getDoc(userRef)).pipe(
-          switchMap(docSnap => {
-            if (!docSnap.exists()) {
-              return from(setDoc(userRef, {
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                role: 'user',
-              })).pipe(map(() => result));
-            } else {
-              return from(setDoc(userRef, {
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-              }, { merge: true })).pipe(map(() => result));
-            }
-          })
-        );
+  /**
+   * Must be called once at app startup to resolve a pending redirect login
+   * (iOS flow). Returns null when no redirect was in progress.
+   */
+  handleRedirectResult(): Observable<any> {
+    return from(getRedirectResult(this.auth)).pipe(
+      switchMap(result => result ? this.upsertUser(result) : of(null))
+    );
+  }
+
+  private isIos(): boolean {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
+
+  private upsertUser(result: any): Observable<any> {
+    const u = result.user;
+    const userRef = doc(this.firestore, `users/${u.uid}`);
+    return from(getDoc(userRef)).pipe(
+      switchMap(docSnap => {
+        if (!docSnap.exists()) {
+          return from(setDoc(userRef, {
+            email: u.email,
+            displayName: u.displayName,
+            photoURL: u.photoURL,
+            role: 'user',
+          })).pipe(map(() => result));
+        } else {
+          return from(setDoc(userRef, {
+            email: u.email,
+            displayName: u.displayName,
+            photoURL: u.photoURL,
+          }, { merge: true })).pipe(map(() => result));
+        }
       })
     );
   }
