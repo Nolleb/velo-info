@@ -10,6 +10,45 @@ export class StravaService {
   private accessToken: string | null = null;
   private tokenExpiry: number | null = null;
 
+  // Strava rate limit: 200 requests per 15-minute window
+  private readonly RATE_LIMIT = 190; // 190 to keep a safety margin
+  private readonly WINDOW_MS = 15 * 60 * 1000;
+  private requestTimestamps: number[] = [];
+
+  private async throttle(): Promise<void> {
+    const now = Date.now();
+    this.requestTimestamps = this.requestTimestamps.filter(t => now - t < this.WINDOW_MS);
+
+    if (this.requestTimestamps.length >= this.RATE_LIMIT) {
+      const waitMs = this.WINDOW_MS - (now - this.requestTimestamps[0]) + 500;
+      console.warn(`⏳ Strava rate limit approaching (${this.requestTimestamps.length}/${this.RATE_LIMIT}), waiting ${Math.ceil(waitMs / 1000)}s...`);
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+      const afterWait = Date.now();
+      this.requestTimestamps = this.requestTimestamps.filter(t => afterWait - t < this.WINDOW_MS);
+    }
+
+    this.requestTimestamps.push(Date.now());
+  }
+
+  private async fetchApi(url: string, token: string, retries = 3): Promise<Response> {
+    await this.throttle();
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.status === 429) {
+      if (retries === 0) throw new Error(`Strava API rate limit exceeded (429): ${url}`);
+      // Reset tracking and wait for the current 15-min window to pass
+      this.requestTimestamps = [];
+      const waitMs = this.WINDOW_MS + 5000;
+      console.error(`⛔ 429 Too Many Requests — waiting ${Math.ceil(waitMs / 1000 / 60)} min before retrying...`);
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+      return this.fetchApi(url, token, retries - 1);
+    }
+
+    return response;
+  }
+
   async getAccessToken(): Promise<string> {
     if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
       return this.accessToken;
@@ -53,9 +92,7 @@ export class StravaService {
       params.append('before', before.toString());
     }
 
-    const response = await fetch(`${this.baseUrl}/athlete/activities?${params}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await this.fetchApi(`${this.baseUrl}/athlete/activities?${params}`, token);
 
     if (!response.ok) {
       throw new Error('Failed to fetch activities');
@@ -66,9 +103,7 @@ export class StravaService {
 
   async getActivityDetail(id: number): Promise<StravaActivity> {
     const token = await this.getAccessToken();
-    const response = await fetch(`${this.baseUrl}/activities/${id}?include_all_efforts=true`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await this.fetchApi(`${this.baseUrl}/activities/${id}?include_all_efforts=true`, token);
 
     if (!response.ok) {
       throw new Error('Failed to fetch activity detail');
@@ -82,9 +117,7 @@ export class StravaService {
     const params = new URLSearchParams({
       keys: 'latlng,altitude,distance'
     });
-    const response = await fetch(`${this.baseUrl}/activities/${id}/streams?${params}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await this.fetchApi(`${this.baseUrl}/activities/${id}/streams?${params}`, token);
 
     if (!response.ok) {
       throw new Error('Failed to fetch activity map');
