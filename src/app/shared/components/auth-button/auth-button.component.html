@@ -19,11 +19,9 @@
     
   </div>
 } @else {
-  <button 
-    class="button button--action button--sub-header"
-    (click)="signInWithGoogle()">
+  <button class="button btn--admin btn--icon-only" (click)="signInWithGoogle()">
     <span
-      [color]="'#151515'"
+      [color]="'var(--secondary-color)'"
       [height]="'18px'"
       [iconName]="'user'"
       [width]="'18px'"
