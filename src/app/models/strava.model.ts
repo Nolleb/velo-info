@@ -169,6 +169,7 @@ export interface GlobalStats {
 export interface SegmentDateStat {
   count: number; // Nombre de passages à cette date
   times?: number[];  // Temps réalisés à cette date (seulement si starred)
+  activityIds?: number[]; // IDs des activités enregistrées (pour éviter les doublons)
 }
 
 export interface SegmentStat {

@@ -357,24 +357,13 @@ export class SyncActivitiesService {
       console.log(`📊 Activity ${activity.id} - ${activity.name}:`);
       console.log(`   Total segment_efforts: ${allSegmentEfforts.length}`);
 
-      // ==================== Enregistrer uniquement les segments STARRED ====================
+      // ==================== Filtrer et dédupliquer les segments STARRED ====================
       let starredSegments = allSegmentEfforts.filter((effort: any) => effort.segment?.starred === true);
       
-      console.log(`⭐ Starred segments to save: ${starredSegments.length}`);
-      
-      for (const effort of starredSegments) {
-        await this.firestoreService.saveSegmentStat(
-          effort.segment.id,
-          effort.segment.name,
-          activityDate,
-          true,
-          effort.moving_time
-        );
-      }
-
-      // ==================== Enrichir les segments STARRED pour l'affichage ====================
+      console.log(`⭐ Starred segments found: ${starredSegments.length}`);
       
       // Gérer les doublons (même segment parcouru plusieurs fois dans la même activité)
+      // IMPORTANT : Déduplication AVANT la sauvegarde dans Firebase
       const segmentIds = starredSegments.map((s: any) => s.segment.id);
       const uniqueSegmentIds = new Set(segmentIds);
       if (segmentIds.length !== uniqueSegmentIds.size) {
@@ -393,8 +382,24 @@ export class SyncActivitiesService {
         });
         
         starredSegments = Array.from(bestEffortsMap.values());
-        console.log(`Final starred segments after deduplication: ${starredSegments.length}`);
+        console.log(`After deduplication: ${starredSegments.length} segments`);
       }
+      
+      // ==================== Enregistrer les segments dédupliqués dans Firebase ====================
+      console.log(`💾 Saving ${starredSegments.length} starred segments to Firebase...`);
+      
+      for (const effort of starredSegments) {
+        await this.firestoreService.saveSegmentStat(
+          effort.segment.id,
+          effort.segment.name,
+          activity.id,
+          activityDate,
+          true,
+          effort.moving_time
+        );
+      }
+
+      // ==================== Enrichir les segments pour l'affichage ====================
 
       const latlngData = map.find(s => s.type === 'latlng')?.data ?? [];
       const altitudeData = map.find(s => s.type === 'altitude')?.data ?? [];
@@ -463,5 +468,76 @@ export class SyncActivitiesService {
 
     await this.firestoreService.saveActivity(storedActivity);
     console.log(`✅ Activity ${activity.id} saved`);
+  }
+
+  /**
+   * Recalcule les stats de segments à partir des activités déjà stockées
+   * Utile pour corriger les doublons sans rappeler l'API Strava
+   */
+  async rebuildSegmentStats(): Promise<void> {
+    console.log('🔄 Rebuild segment stats from stored activities...');
+    
+    try {
+      // 1. Nettoyer tous les segments existants
+      console.log('🧹 Clearing existing segment stats...');
+      await this.firestoreService.clearSegmentStats();
+      
+      // 2. Récupérer toutes les activités
+      console.log('📦 Loading all activities...');
+      const activities = await this.firestoreService.getAllActivities();
+      console.log(`Found ${activities.length} activities`);
+      
+      let processedSegments = 0;
+      
+      // 3. Parcourir chaque activité et recréer les stats
+      for (const activity of activities) {
+        if (!activity.segment_efforts || activity.segment_efforts.length === 0) {
+          continue;
+        }
+        
+        // Filtrer les segments starred
+        const starredSegments = activity.segment_efforts.filter(
+          (effort: any) => effort.segment?.starred === true
+        );
+        
+        if (starredSegments.length === 0) {
+          continue;
+        }
+        
+        // Dédupliquer (au cas où)
+        const bestEffortsMap = new Map();
+        starredSegments.forEach((effort: any) => {
+          const segmentId = effort.segment.id;
+          const existingEffort = bestEffortsMap.get(segmentId);
+          
+          if (!existingEffort || effort.moving_time < existingEffort.moving_time) {
+            bestEffortsMap.set(segmentId, effort);
+          }
+        });
+        
+        const uniqueSegments = Array.from(bestEffortsMap.values());
+        
+        // Enregistrer chaque segment
+        for (const effort of uniqueSegments) {
+          await this.firestoreService.saveSegmentStat(
+            effort.segment.id,
+            effort.segment.name,
+            activity.id,
+            activity.start_date,
+            true,
+            effort.moving_time
+          );
+          processedSegments++;
+        }
+        
+        console.log(`✓ Activity ${activity.id}: ${uniqueSegments.length} segments processed`);
+      }
+      
+      console.log(`✅ Rebuild complete: ${processedSegments} segment records created`);
+      
+    } catch (error) {
+      console.error('❌ Error rebuilding segment stats:', error);
+      throw error;
+    }
   }
 }

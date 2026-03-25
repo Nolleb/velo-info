@@ -107,6 +107,21 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
               🔄 Nouvelles activités
             </button>
           </div>
+
+          <div class="rebuild-section">
+            <h3>🔧 Maintenance</h3>
+            <p class="info-text">Recalculer les statistiques des segments à partir des activités déjà enregistrées (sans appeler Strava)</p>
+            <button 
+              (click)="rebuildSegments()" 
+              class="btn-rebuild"
+              [disabled]="status().isSyncing || isRebuilding()">
+              @if (isRebuilding()) {
+                <span class="spinner-small"></span> Reconstruction en cours...
+              } @else {
+                🔨 Reconstruire les stats de segments
+              }
+            </button>
+          </div>
         </div>
       }
 
@@ -383,6 +398,41 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    .rebuild-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f0f7ff;
+      border-radius: 8px;
+      border-left: 4px solid #2196F3;
+    }
+
+    .rebuild-section h3 {
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .btn-rebuild {
+      width: 100%;
+      background: #2196F3;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-rebuild:hover:not(:disabled) {
+      background: #1976D2;
+    }
+
+    .btn-rebuild:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   `]
 })
 export class SyncActivitiesComponent {
@@ -392,6 +442,7 @@ export class SyncActivitiesComponent {
   hasNewActivities = signal<boolean>(true); // Démarre à true, sera désactivé si besoin
   isChecking = signal<boolean>(true); // On démarre en mode checking
   isLoading = signal<boolean>(true); // Loading initial
+  isRebuilding = signal<boolean>(false); // Pour la reconstruction de segments
   
   // Années disponibles de 2019 à l'année courante
   availableYears: number[] = Array.from(
@@ -457,5 +508,31 @@ export class SyncActivitiesComponent {
     await this.syncService.incrementalSync();
     // Revérifier après la sync
     this.checkForNewActivities();
+  }
+
+  async rebuildSegments(): Promise<void> {
+    if (!confirm(
+      '🔨 Reconstruction des statistiques de segments\n\n' +
+      'Cette opération va :\n' +
+      '• Nettoyer toutes les stats de segments actuelles\n' +
+      '• Les recalculer à partir des activités déjà stockées\n' +
+      '• Corriger les doublons éventuels\n\n' +
+      '⚠️ Aucun appel à Strava ne sera effectué.\n\n' +
+      'Continuer ?'
+    )) {
+      return;
+    }
+
+    this.isRebuilding.set(true);
+    
+    try {
+      await this.syncService.rebuildSegmentStats();
+      alert('✅ Statistiques de segments reconstruites avec succès !');
+    } catch (error) {
+      console.error('Error rebuilding segments:', error);
+      alert('❌ Erreur lors de la reconstruction : ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      this.isRebuilding.set(false);
+    }
   }
 }

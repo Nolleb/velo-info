@@ -56,6 +56,7 @@ export class FirestoreService {
    * Enregistre ou met à jour un passage sur un segment
    * @param segmentId ID du segment
    * @param segmentName Nom du segment
+   * @param activityId ID de l'activité
    * @param activityDate Date de l'activité (format ISO)
    * @param isStarred Si le segment est favori
    * @param movingTime Temps en mouvement (en secondes, uniquement pour starred)
@@ -63,6 +64,7 @@ export class FirestoreService {
   async saveSegmentStat(
     segmentId: number,
     segmentName: string,
+    activityId: number,
     activityDate: string,
     isStarred: boolean,
     movingTime?: number
@@ -75,7 +77,10 @@ export class FirestoreService {
     
     if (!existingStat) {
       // Créer un nouveau segment
-      const dateData: SegmentDateStat = { count: 1 };
+      const dateData: SegmentDateStat = { 
+        count: 1,
+        activityIds: [activityId]
+      };
       if (isStarred && movingTime) {
         dateData.times = [movingTime];
       }
@@ -99,9 +104,19 @@ export class FirestoreService {
       const updatedDates = { ...existingStat.dates };
       
       if (updatedDates[dateKey]) {
-        // Date existe déjà : incrémenter le count et ajouter le time
+        // Date existe déjà : vérifier si l'activité a déjà été enregistrée
+        const existingActivityIds = updatedDates[dateKey].activityIds || [];
+        
+        if (existingActivityIds.includes(activityId)) {
+          // L'activité a déjà été enregistrée, on ne fait rien
+          console.log(`⚠️ Activity ${activityId} already recorded for segment ${segmentId} on ${dateKey}, skipping...`);
+          return;
+        }
+        
+        // Nouvelle activité pour cette date : ajouter
         const dateData: SegmentDateStat = {
-          count: updatedDates[dateKey].count + 1
+          count: updatedDates[dateKey].count + 1,
+          activityIds: [...existingActivityIds, activityId]
         };
         
         if (movingTime) {
@@ -114,7 +129,10 @@ export class FirestoreService {
         updatedDates[dateKey] = dateData;
       } else {
         // Nouvelle date
-        const dateData: SegmentDateStat = { count: 1 };
+        const dateData: SegmentDateStat = { 
+          count: 1,
+          activityIds: [activityId]
+        };
         if (movingTime) {
           dateData.times = [movingTime];
         }
@@ -165,7 +183,7 @@ export class FirestoreService {
     
     for (const [dateKey, dateStat] of Object.entries(segmentStat.dates)) {
       // Ne prendre que les dates antérieures ou égales
-      if (dateKey <= cutoffDate && dateStat.times) {
+      if (dateKey < cutoffDate && dateStat.times) {
         allTimes.push(...dateStat.times);
       }
     }
@@ -366,10 +384,7 @@ export class FirestoreService {
     await Promise.all(deleteMonthsPromises);
 
     // Supprimer toutes les stats de segments
-    const segmentsRef = collection(this.firestore, `users/${this.userId}/segmentsStats`);
-    const segmentsSnapshot = await getDocs(segmentsRef);
-    const deleteSegmentsPromises = segmentsSnapshot.docs.map(doc => deleteDoc(doc.ref));
-    await Promise.all(deleteSegmentsPromises);
+    await this.clearSegmentStats();
 
     // Réinitialiser les stats globales
     await this.setGlobalStats({
@@ -381,5 +396,14 @@ export class FirestoreService {
       lastSyncDate: new Date().toISOString(),
       userId: this.userId
     });
+  }
+
+  // Nettoyer uniquement les stats de segments (pour rebuild)
+  async clearSegmentStats(): Promise<void> {
+    const segmentsRef = collection(this.firestore, `users/${this.userId}/segmentsStats`);
+    const segmentsSnapshot = await getDocs(segmentsRef);
+    const deleteSegmentsPromises = segmentsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deleteSegmentsPromises);
+    console.log(`🧹 Cleared ${segmentsSnapshot.size} segment stat records`);
   }
 }
