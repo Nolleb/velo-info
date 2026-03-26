@@ -121,6 +121,18 @@ import { SyncActivitiesService } from '../../services/sync-activities.service';
                 🔨 Reconstruire les stats de segments
               }
             </button>
+            
+            <p class="info-text" style="margin-top: 20px;">Recalculer les classements (gold/silver/bronze) des activités depuis les stats de segments (à faire APRÈS la reconstruction)</p>
+            <button 
+              (click)="refreshRankings()" 
+              class="btn-rebuild"
+              [disabled]="status().isSyncing || isRefreshing()">
+              @if (isRefreshing()) {
+                <span class="spinner-small"></span> Actualisation en cours...
+              } @else {
+                🔄 Actualiser les classements
+              }
+            </button>
           </div>
         </div>
       }
@@ -443,6 +455,7 @@ export class SyncActivitiesComponent {
   isChecking = signal<boolean>(true); // On démarre en mode checking
   isLoading = signal<boolean>(true); // Loading initial
   isRebuilding = signal<boolean>(false); // Pour la reconstruction de segments
+  isRefreshing = signal<boolean>(false); // Pour l'actualisation des classements
   
   // Années disponibles de 2019 à l'année courante
   availableYears: number[] = Array.from(
@@ -533,6 +546,32 @@ export class SyncActivitiesComponent {
       alert('❌ Erreur lors de la reconstruction : ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       this.isRebuilding.set(false);
+    }
+  }
+
+  async refreshRankings(): Promise<void> {
+    if (!confirm(
+      '🔄 Actualisation des classements\n\n' +
+      'Cette opération va :\n' +
+      '• Recalculer les classements (gold/silver/bronze) de toutes les activités\n' +
+      '• À partir des statistiques de segments actuelles\n' +
+      '• Sans appeler Strava\n\n' +
+      '⚠️ À faire APRÈS avoir reconstruit les stats de segments.\n\n' +
+      'Continuer ?'
+    )) {
+      return;
+    }
+
+    this.isRefreshing.set(true);
+    
+    try {
+      await this.syncService.refreshActivitiesRankings();
+      alert('✅ Classements actualisés avec succès !');
+    } catch (error) {
+      console.error('Error refreshing rankings:', error);
+      alert('❌ Erreur lors de l\'actualisation : ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      this.isRefreshing.set(false);
     }
   }
 }

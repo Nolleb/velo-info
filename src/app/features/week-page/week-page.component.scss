@@ -62,3 +62,9 @@
   border-radius: 8px;
   color: var(--white-color);
 }
+
+.activity-result {
+  background: color-mix(in srgb, var(--secondary-color) 60%, white);
+  padding: 5px;
+  border-radius: 8px;
+}

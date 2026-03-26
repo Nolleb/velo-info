@@ -68,9 +68,9 @@
                 <span class="font-700 font-size-14">{{ activity.name }}</span>  <div>&nbsp;·&nbsp;</div> <span class="font-400 font-size-12">{{ activity.start_date | safeDate }}</span>
               </div>
               <div class="activity-distance d-flex gap-5 align-items-center justify-content-center">
-                <span class="font-400 font-size-12">{{ activity.distance | km }} km </span> <div>&nbsp;·&nbsp;</div>
-                <span class="font-400 font-size-12">{{ activity.total_elevation_gain }} m </span> <div>&nbsp;·&nbsp;</div>
-                <span class="font-400 font-size-12">{{ activity.moving_time | minutesToTime }}</span>
+                <span class="activity-result font-400 font-size-12">{{ activity.distance | km }} km </span> <div>&nbsp;·&nbsp;</div>
+                <span class="activity-result font-400 font-size-12">{{ activity.total_elevation_gain }} m </span> <div>&nbsp;·&nbsp;</div>
+                <span class="activity-result font-400 font-size-12">{{ activity.moving_time | minutesToTime }}</span>
               </div>
             </div>
           }

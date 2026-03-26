@@ -540,4 +540,74 @@ export class SyncActivitiesService {
       throw error;
     }
   }
+
+  /**
+   * Recalcule les overallRanking de toutes les activités depuis les segmentsStats
+   * À faire APRÈS rebuildSegmentStats() pour corriger les données corrompues
+   */
+  async refreshActivitiesRankings(): Promise<void> {
+    console.log('🔄 Refreshing all activities rankings from segmentsStats...');
+    
+    try {
+      const activities = await this.firestoreService.getAllActivities();
+      console.log(`Found ${activities.length} activities to refresh`);
+      
+      let updatedCount = 0;
+      
+      for (const activity of activities) {
+        if (!activity.segment_efforts || activity.segment_efforts.length === 0) {
+          continue;
+        }
+        
+        // Filtrer les segments starred
+        const starredSegments = activity.segment_efforts.filter(
+          (effort: any) => effort.segment?.starred === true
+        );
+        
+        if (starredSegments.length === 0) {
+          continue;
+        }
+        
+        // Recalculer les overallRanking depuis segmentsStats
+        const refreshedStarredSegments = [];
+        for (const segment of starredSegments) {
+          const bestTimes = await this.firestoreService.getSegmentBestTimes(
+            segment.segment.id,
+            3,
+            activity.start_date
+          );
+          
+          refreshedStarredSegments.push({
+            ...segment,
+            overallRanking: {
+              gold: bestTimes[0] ?? null,
+              silver: bestTimes[1] ?? null,
+              bronze: bestTimes[2] ?? null
+            }
+          });
+        }
+        
+        // Mettre à jour l'activité avec les nouveaux rankings
+        const updatedActivity = {
+          ...activity,
+          segment_efforts: [
+            // Garder les segments non-starred tels quels
+            ...activity.segment_efforts.filter((e: any) => !e.segment?.starred),
+            // Remplacer les segments starred par les refreshed
+            ...refreshedStarredSegments
+          ]
+        };
+        
+        await this.firestoreService.saveActivity(updatedActivity);
+        updatedCount++;
+        console.log(`✓ Activity ${activity.id}: ${refreshedStarredSegments.length} segments refreshed`);
+      }
+      
+      console.log(`✅ Refresh complete: ${updatedCount} activities updated`);
+      
+    } catch (error) {
+      console.error('❌ Error refreshing activities:', error);
+      throw error;
+    }
+  }
 }
